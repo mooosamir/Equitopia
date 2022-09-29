@@ -51,7 +51,7 @@ class RentType(models.Model):
          ('10', '10'), ('11', '11'), ('12', '12')],
         required=True, string='Rent Period')
     renttype = fields.Selection(
-        [('day','Dia'),
+        [
          ('Monthly', 'Monthly'),
          ('Yearly', 'Yearly'),
          ('Weekly', 'Weekly')],
@@ -243,7 +243,7 @@ class PropertyInsurance(models.Model):
         string='Policy Number',
         size=60)
     contact = fields.Many2one(
-        comodel_name='res.company',
+        comodel_name='res.partner',
         string='Insurance Comapny')
     company_id = fields.Many2one(
         comodel_name='res.company',
