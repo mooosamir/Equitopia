@@ -1,0 +1,40 @@
+<odoo>
+    <data>
+        <record id="saul_property_maintenance" model="ir.ui.view">
+            <field name="name">account.asset.asset.form.custom</field>
+            <field name="model">account.asset.asset</field>
+            <field name="inherit_id" ref="om_account_asset.view_account_asset_asset_form" />
+            <field name="arch" type="xml">
+                <xpath expr="//page[@name='photos']" position="before">
+                    <page string="Servicios y Mantenimientos (DEBUG)">
+                        <separator string="Servicios y Mantenimientos" colspan="4" />
+                        <field name="maintenance_ids" nolabel="1" readonly="1">
+                            <tree string="Mantenimientos" create="False">
+                                <field name="name" string="Servicio de la propiedad" />
+                                        <!--<field name="maintenance_team_id" string="Equipo" />-->
+                                <field name="cost_final" />
+                                <field name="cost_daily" />
+                                <field name="cost_weekly" />
+                                <field name="cost_monthly" />
+                                <field name="cost_half_yearly" />
+                                <field name="cost_yearly" />
+                                <field name="charge_to" />
+                            </tree>
+                            <form string="Mantenimientos">
+                                <field name="name" string="Servicio de la propiedad" />
+                                        <!--<field name="maintenance_team_id" string="Equipo" />-->
+                                <field name="cost_final" />
+                                <field name="cost_daily" />
+                                <field name="cost_weekly" />
+                                <field name="cost_monthly" />
+                                <field name="cost_half_yearly" />
+                                <field name="cost_yearly" />
+                                <field name="charge_to" />
+                            </form>
+                        </field>
+                    </page>
+                </xpath>
+            </field>
+        </record>
+    </data>
+</odoo>

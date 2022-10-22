@@ -1,0 +1,16 @@
+<odoo>
+  <data>
+    <record model="ir.ui.view" id="maintenance_view_team_corrected">
+        <field name="model">maintenance.team</field>
+        <field name="inherit_id" ref="maintenance.maintenance_team_view_tree" />
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='company_id']" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </xpath>
+            <field name="member_ids" position="after">
+                <field name="partner_id" />
+            </field>
+        </field>
+    </record>
+  </data>
+</odoo>

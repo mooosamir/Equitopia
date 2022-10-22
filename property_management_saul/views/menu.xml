@@ -1,0 +1,26 @@
+<odoo>
+    <record id="action_maintenance_requests" model="ir.actions.act_window">
+        <field name="name">Maintenance Requests</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">maintenance.request</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+    <menuitem
+        id="menu_maintenance_requests"
+        name="Maintenance requests"
+        parent="property_management.menu_maintenance_sub"
+        action="action_maintenance_requests" />
+    
+    <record id="action_maintenance_calendar" model="ir.actions.act_window">
+        <field name="name">Maintenance Calendar</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">maintenance.request</field>
+        <field name="view_mode">calendar</field>
+    </record>
+    <menuitem
+        id="menu_maintenance_calendar"
+        name="Maintenance calendar"
+        parent="property_management.menu_maintenance_sub"
+        action="action_maintenance_calendar" />
+
+</odoo>
