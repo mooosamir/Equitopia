@@ -686,7 +686,7 @@ class AccountAnalyticAccount(models.Model):
                          'currency_id': tenancy_rec.currency_id.id or False,
                          'rel_tenant_id': tenancy_rec.tenant_id.id
                          })
-            elif tenancy_rec.rent_type_id.renttype != 'Weekly' and tenancy_rec.rent_type_id.renttype != 'Day':
+            elif tenancy_rec.rent_type_id.renttype != 'Weekly':
                 if tenancy_rec.rent_type_id.renttype == 'Monthly':
                     interval = int(tenancy_rec.rent_type_id.name)
                 if tenancy_rec.rent_type_id.renttype == 'Yearly':
@@ -717,18 +717,6 @@ class AccountAnalyticAccount(models.Model):
                     rent_obj.create({
                         'start_date': d1,
                         'amount': tenancy_rec.rent * tot_rec2 or 0.0,
-                        'property_id': tenancy_rec.property_id
-                        and tenancy_rec.property_id.id or False,
-                        'tenancy_id': tenancy_rec.id,
-                        'currency_id': tenancy_rec.currency_id.id or False,
-                        'rel_tenant_id': tenancy_rec.tenant_id.id
-                    })
-            if tenancy_rec.rent_type_id.renttype == 'Day':
-                d1 = tenancy_rec.date_start
-                d2 = tenancy_rec.date
-                rent_obj.create({
-                        'start_date': d1,
-                        'amount': tenancy_rec.rent or 0.0,
                         'property_id': tenancy_rec.property_id
                         and tenancy_rec.property_id.id or False,
                         'tenancy_id': tenancy_rec.id,
