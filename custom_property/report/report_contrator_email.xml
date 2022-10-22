@@ -1,0 +1,191 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+	<data>
+		<template id="custom_property_contrato_report">
+			<t t-call="web.html_container">
+				<t t-call="web.external_layout">
+					<div class="page">
+						<!--inici codigo-->
+						<br/><br/><br/>
+						<h1 style="text-align:center;"><strong> DETALLES DE CONTRATO</strong></h1>
+						<div class="row">
+							<div class="col-3">
+									<strong>Contrato</strong><br/>
+									<t t-esc="doc.name"/>
+							</div>
+							<div class="col-3">
+									<br/><t t-esc="doc.code"/>
+							</div>
+						</div>
+					  <div class="row">
+					  	  <h4>Informacion de propiedad</h4> 
+								
+							<div class="col-6">
+									<strong>Propiedad</strong><br/>
+									<t t-esc="doc.property_id.name"/>
+									<strong>Gerente de cuenta</strong><br/>
+									<t t-esc="doc.manager_id.name"/>
+									<strong>Moneda</strong><br/>
+									<t t-ecc="doc.currency_id.name"/>
+							</div>
+							<div class="col-6">
+								<strong>Inquilino</strong><br/>
+									<t t-esc="doc.tenant_id.name"/>
+									<strong>Gerente de cuenta</strong><br/>
+									<t t-esc="doc.company_id.name"/>
+									
+							</div>
+
+           			</div>
+           			 <div class="row">
+					  	  <h4>Informacion sobre el alquiler</h4> 
+								
+							<div class="col-6">
+									<strong>Alquiler de la propiedad</strong><br/>
+									<t t-esc="doc.rent"/>
+									<strong>Importe depositado</strong><br/>
+									<t t-esc="doc.deposit"/>
+									<strong>¿Depósito recibido?</strong><br/>
+									<t t-esc="doc.deposit_received"/>
+									<strong>Contacto</strong><br/>
+									<t t-esc="doc.contact_id"/>
+									<strong>Check in</strong><br/>
+									<t t-esc="doc.chech_in"/>
+									<strong>Check out</strong><br/>
+									<t t-esc="doc.chech_out"/>
+							</div>
+							<div class="col-6">
+								<strong>Fecha</strong><br/>
+									<t t-esc="doc.ten_date"/>
+									<strong>Depósito devuelto</strong><br/>
+									<t t-esc="doc.amount_return"/>
+										<strong>Consto de mantenimiento</strong><br/>
+									<t t-esc="doc.main_cost"/>
+									<strong>Entrega de accesos</strong><br/>
+									<t t-esc="doc.entrega_acceso_id.name"/>
+										<strong>Correo</strong><br/>
+									<t t-esc="doc.email"/>
+									<strong>Telefono</strong><br/>
+									<t t-esc="doc.telefono"/>
+									
+							</div>
+
+           			</div>
+           			 <div class="row">
+					  	  <h4>Informacion de contrato</h4> 
+								
+							<div class="col-6">
+									<strong>Fecha de inicio</strong><br/>
+									<t t-esc="doc.date_start"/>
+									<strong>tipo de alquiler</strong><br/>
+									<t t-esc="doc.rent_type_id"/>
+									
+							</div>
+							<div class="col-6">
+								<strong>Fecha de caducidad</strong><br/>
+									<t t-esc="doc.date"/>
+									<strong>Alquiler total</strong><br/>
+									<t t-esc="doc.total_rent"/>
+									
+							</div>
+
+           			</div>
+           			 <div class="row">
+					  	  <h4>Informacion de la comisión</h4> 
+								
+							<div class="col-6">
+									<strong>Comisión</strong><br/>
+									<t t-esc="doc.commission"/>
+									
+							</div>
+
+           			</div>
+           			<div class="row">
+					  	  <h4>Informacion de la Penalizaciones</h4> 
+								
+							<div class="col-6">
+									<strong>Multa %</strong><br/>
+									<t t-esc="doc.penalty"/>
+									
+							</div>
+								<div class="col-6">
+									<strong>Recuento de multas por dia</strong><br/>
+									<t t-esc="doc.penalty_day"/>
+									
+							</div>
+
+           			</div>
+           			<div>Horario de alquiler</div>
+           			<table class="table table-sm table-bordered">
+						<thead>
+							<tr>
+							<th>#</th>	
+							<th>Fecha</th>
+							<th>Cantidad</th>
+							<th>Cantidad de penalizacion</th>
+							<th>Cantidad Pendiente</th>
+							<th>Detalle de cheque</th>
+							<th>Factura</th>
+							<th>Notas</th>
+							<th>Pagados</th>
+							<th>Publicada</th>
+						</tr>
+						</thead>
+						<tbody>
+							<t t-foreach="doc.rent_schedule_ids" t-as="temp">
+							<tr>
+							<td><t t-esc="temp.hecho_pago"/></td>	
+							<td><t t-esc="temp.start_date"/></td>
+							<td><t t-esc="temp.amount" t-options="{'widget': 'monetary','display_currency':doc.currency_id}"/></td>
+							<td><t t-esc="temp.penalty_amount"/></td>
+							<td><t t-esc="temp.pen_amt"/></td>
+							<td><t t-esc="temp.cheque_detail"/></td>
+							<td><t t-esc="temp.invc_id"/></td>
+							<td><t t-esc="temp.note"/></td>
+							<td><t t-esc="temp.move_check"/></td>
+							<td><t t-esc="temp.inv"/></td>
+						  </tr>
+						  </t>
+						</tbody>
+					</table>
+					<div>Mantenimiento periódico</div>
+					<table class="table table-sm table-bordered">
+						<thead>
+							<tr>
+							<th>Tipo de mantenimiento</th>
+							<th>Costo</th>
+						</tr>
+						</thead>
+						<tbody>
+							<t t-foreach="doc.cost_id" t-as="temp">
+							<tr>
+							<td><t t-esc="temp.maint_type"/></td>	
+							<td><t t-esc="temp.cost"/></td>
+						  </tr>
+						  </t>
+						</tbody>
+					</table>
+
+           			<div class="row">
+					
+							<div class="col-6">
+									<strong>Terminos y condiciones %</strong><br/>
+									<t t-esc="doc.description"/>
+									
+							</div>
+								<div class="col-6">
+									<strong>Notas</strong><br/>
+									<t t-esc="doc.duration_cover"/>
+									
+							</div>
+
+           			</div>
+
+					
+
+					</div>
+				</t>
+			</t>
+		</template>
+		</data>
+</odoo>
