@@ -12,5 +12,44 @@
             </field>
         </field>
     </record>
+
+    <record model="ir.ui.view" id="account_asset_custom_maintenance">
+      <field name="model">account.asset.asset</field>
+      <field name="inherit_id" ref="om_account_asset.view_account_asset_asset_form" />
+      <field name="arch" type="xml">
+        <xpath expr="//page[@name='photos']" position="before">
+          <page name="maintenance_by_property_page" string="Mantenimiento (nuevo)">
+            <field name="maintenance_by_property">
+              <tree string="Mantenimientos de la propiedad">
+                <field name="name" />
+                <field name="team_id" />
+                <field name="cost_final" />
+                <field name="cost_daily" />
+                <field name="cost_weekly" />
+                <field name="cost_half_monthly" />
+                <field name="cost_monthly" />
+                <field name="cost_half_yearly" />
+                <field name="cost_yearly" />
+                <field name="charge_to" />
+              </tree>
+              <form string="Mantenimientos de la propiedad">
+                <group>
+                  <field name="name" />
+                  <field name="team_id" />
+                  <field name="cost_final" />
+                  <field name="cost_daily" />
+                  <field name="cost_weekly" />
+                  <field name="cost_half_monthly" />
+                  <field name="cost_monthly" />
+                  <field name="cost_half_yearly" />
+                  <field name="cost_yearly" />
+                  <field name="charge_to" />
+                </group>
+              </form>
+            </field>
+          </page>
+        </xpath>
+      </field>
+    </record>
   </data>
 </odoo>

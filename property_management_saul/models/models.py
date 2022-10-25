@@ -10,7 +10,7 @@ class SaulMaintenance(models.Model):
     cost_half_yearly = fields.Float(string="Costo semestral")
     cost_yearly = fields.Float(string="Costo anual")
     charge_to = fields.Selection([('tentat','Inquilino'),('landlord','Property'),('admin','Administrador')], string="Encargado de pagar")
-    
+    ##
 
 class SaulAccountAsset(models.Model):
     _inherit = 'account.asset.asset'
