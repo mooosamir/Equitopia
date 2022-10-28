@@ -5,6 +5,7 @@ class MaintenanceTeamModified(models.Model):
 
     partner_id = fields.Many2one('res.partner', string='Company')
 
+
 class AccountAssetModified(models.Model):
     _inherit = 'account.asset.asset'
 
@@ -12,23 +13,45 @@ class AccountAssetModified(models.Model):
         comodel_name='maintenance.request',
         inverse_name='property_id')
 
-    # TODO: Delete field below
-    maintenance_per_property = fields.Many2one('maintenance.request')
+    def create_tenancy(self):
+        return {
+            'type': 'ir.actions.act_window',
+            'name': 'Crear contrato',
+            'res_model': 'account.analytic.account',
+            'view_type': 'form',
+            'view_mode': 'form',
+            'view_id': self.env.ref('property_management.property_analytic_view_form').id,
+            'target': 'current',
+            'context': {
+                'default_property_id': self.id
+            }
+        }
+
 
 class MaintenancePerProperty(models.Model):
     _inherit = 'maintenance.request'
 
-    charge_tenant = fields.Boolean(string="A cuenta del inquilino")
-    frequency = fields.Selection([('o', 'Unico'), ('d', 'Diario'), ('w', 'Semanal'), ('m', 'Mensual'), ('a', 'Anual')], default='o', string="Frecuencia")
+    #TODO: Volver a la tabla anterior con 1000 columnas
+
     team_id = fields.Many2one('maintenance.team', string="Equipo responsable")
+    cost = fields.Float(string="Costo")
+    frequency = fields.Selection([('once', 'Unico'), ('Day', 'Diario'), ('Weekly', 'Semanal'), ('Monthly', 'Mensual'), ('Yearly', 'Anual')], default='once', string="Frecuencia")
+    charge_to_corrected = fields.Selection([('tenant','Inquilino'),('landlord','Propietario'),('admin','Administrador')], string="A cuenta de quien")
+    charge = fields.Boolean(string="Aplicar cargo")
 
-    cost_final = fields.Float(string="Costo al final de la renta")
-    cost_daily = fields.Float(string="Costo diario")
-    cost_weekly = fields.Float(string="Costo semanal")
-    cost_half_monthly = fields.Float(string="Costo quincenal")
-    cost_monthly = fields.Float(string="Costo mensual")
-    cost_half_yearly = fields.Float(string="Costo semestral")
-    cost_yearly = fields.Float(string="Costo anual")
-    charge_to = fields.Selection([('tentat','Inquilino'),('landlord','Propietario'),('admin','Administrador')], string="Encargado de pagar")
- 
 
+class AccountAnalyticModified(models.Model):
+    _inherit = 'account.analytic.account'
+
+    def _tentant(self):
+        # frequency = self.rent_type_id.renttype.lowercase()
+         
+        maintenances_return = []
+        maintenances = self.property_id.maintenance_by_property.search([("charge_to_corrected", "=", "tenant"), ("frequency", "=", "once")])
+        self.tenant_maintenance = maintenances
+
+    tenant_maintenance = fields.One2many(
+        comodel_name='maintenance.request',
+        inverse_name='property_id',
+        compute="_tentant")
+    
