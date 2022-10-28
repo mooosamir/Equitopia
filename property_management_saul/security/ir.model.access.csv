@@ -1,3 +1,0 @@
-id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
-access_property_management_saul,property_management_saul.property_management_saul,model_property_management_saul_property_management_saul,base.group_user,1,1,1,1
-access_group_equipment_manager_account_asset_asset,access_group_equipment_manager_account_asset_asset,om_account_asset.model_account_asset_asset,maintenance.group_equipment_manager,1,1,0,0
