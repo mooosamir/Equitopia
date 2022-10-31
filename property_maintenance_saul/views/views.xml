@@ -13,7 +13,7 @@
         </field>
     </record>
 
-    <record model="ir.ui.view" id="account_asset_custom_maintenance">
+    <record model="ir.ui.view" id="account_asset_custom_maintenance1">
       <field name="model">account.asset.asset</field>
       <field name="inherit_id" ref="om_account_asset.view_account_asset_asset_form" />
       <field name="arch" type="xml">
@@ -26,13 +26,13 @@
 
         <xpath expr="//page[@name='photos']" position="before">
           <page name="maintenance_by_property_page" string="Mantenimiento (nuevo)">
-            <field name="maintenance_by_property">
+            <field name="maintenance_per_property">
               <tree string="Mantenimientos de la propiedad">
                 <field name="name" />
                 <field name="team_id" />
                 <field name="frequency" />
                 <field name="cost" />
-                <field name="charge_to_corrected" />
+                <field name="charge_to" />
               </tree>
               <form string="Mantenimientos de la propiedad">
                 <group>
@@ -40,7 +40,7 @@
                   <field name="team_id" />
                   <field name="frequency" />
                   <field name="cost" />
-                  <field name="charge_to_corrected" />
+                  <field name="charge_to" />
                 </group>
               </form>
             </field>
@@ -49,24 +49,38 @@
       </field>
     </record>
 
-    <record model="ir.ui.view" id="account_analytic_saul_maintenance">
+    <record model="ir.ui.view" id="account_analytic_saul_maintenance1">
       <field name="model">account.analytic.account</field>
       <field name="inherit_id" ref="property_management.property_analytic_view_form" />
       <field name="arch" type="xml">
+        <field name="rent_type_id" position="after">
+          <field name="frequency" />
+        </field>
         <xpath expr="//page[@name='history']" position="before">
           <page name="tenant_maintenance_page" string="Mantenimientos">
-            <field name="tenant_maintenance">
+            <field name="maintenance_per_property" readonly="0">
               <tree string="Mantenimientos">
                 <field name="name" />
                 <field name="frequency" />
                 <field name="cost" />
                 <field name="team_id" />
-                <field name="charge_to_corrected" />
+                <field name="charge_to" />
+                <field name="property_id" />
               </tree>
+              <form string="Mantenimientos de la propiedad">
+                <group>
+                  <field name="name" />
+                  <field name="team_id" />
+                  <field name="frequency" />
+                  <field name="cost" />
+                  <field name="charge_to" />
+                </group>
+              </form>
             </field>
           </page>
         </xpath>
       </field>
     </record>
+
   </data>
 </odoo>
