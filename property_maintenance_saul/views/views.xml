@@ -17,14 +17,19 @@
       <field name="model">account.asset.asset</field>
       <field name="inherit_id" ref="om_account_asset.view_account_asset_asset_form" />
       <field name="arch" type="xml">
+        <!-- Campos ocultos -->
         <xpath expr="//page[@name='occupancy']" position="attributes">
           <attribute name="invisible">1</attribute>
         </xpath>
+
+        <!-- Boton de nuevo contrato -->
         <xpath expr="//button[@name='open_url']" position="after">
           <button name="create_tenancy" string="Nuevo contrato" type="object" icon="fa-edit" class="oe_stat_button" />
         </xpath>
 
-        <xpath expr="//page[@name='photos']" position="before">
+        <!-- Mantenimientos por propiedad -->
+
+        <xpath expr="//page[@name='sub_properties']" position="before">
           <page name="maintenance_by_property_page" string="Mantenimiento (nuevo)">
             <field name="maintenance_per_property">
               <tree string="Mantenimientos de la propiedad">
@@ -53,9 +58,13 @@
       <field name="model">account.analytic.account</field>
       <field name="inherit_id" ref="property_management.property_analytic_view_form" />
       <field name="arch" type="xml">
+
+        <!-- Mantenimientos por propiedad -->
         <field name="rent_type_id" position="after">
           <field name="frequency" />
+          <field name="mirror_contract_id" domain="[('is_landlord_rent', '=', 'True')]" />
         </field>
+
         <xpath expr="//page[@name='history']" position="before">
           <page name="tenant_maintenance_page" string="Mantenimientos">
             <field name="maintenance_per_property" readonly="0">
@@ -79,8 +88,64 @@
             </field>
           </page>
         </xpath>
+
+        <!-- Propiedades disponibles -->
+        <xpath expr="//field[@name='property_id']" position="attributes">
+          <attribute name="domain">[]</attribute>
+        </xpath>
+        <xpath expr="//field[@name='rent_type_id']" position="attributes">
+          <attribute name="required">0</attribute>
+        </xpath>
+
+        <!-- Contrato espejo -->
+        <xpath expr="//button[@name='button_maintenance']" position="after">
+          <button name="mirror_contract" string="Contrato espejo" type="object"/>
+        </xpath>
+
       </field>
     </record>
 
+    <record model="ir.ui.view" id="account_anlytic_landlord_custom_maintenance">
+      <field name="model">account.analytic.account</field>
+      <field name="inherit_id" ref="property_landlord_management.landlord_analytic_view_form_id" />
+      <field name="arch" type="xml">
+
+        <xpath expr="//field[@name='rent_type_id']" position="attributes">
+          <attribute name="required">0</attribute>
+        </xpath>
+
+        <!-- Mantenimientos por propiedad -->
+        <field name="rent_type_id" position="after">
+          <field name="frequency" />
+        </field>
+
+        <xpath expr="//page[@name='history']" position="before">
+          <page name="tenant_maintenance_page" string="Mantenimientos">
+            <field name="maintenance_per_property" readonly="0">
+              <tree string="Mantenimientos">
+                <field name="name" />
+                <field name="frequency" />
+                <field name="cost" />
+                <field name="team_id" />
+                <field name="charge_to" />
+                <field name="property_id" />
+              </tree>
+              <form string="Mantenimientos de la propiedad">
+                <group>
+                  <field name="name" />
+                  <field name="team_id" />
+                  <field name="frequency" />
+                  <field name="cost" />
+                  <field name="charge_to" />
+                </group>
+              </form>
+            </field>
+          </page>
+        </xpath>
+
+
+      </field>
+    </record>
+ 
   </data>
 </odoo>

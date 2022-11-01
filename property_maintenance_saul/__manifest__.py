@@ -20,7 +20,12 @@
     'version': '0.1',
 
     # any module necessary for this one to work correctly
-    'depends': ['base', 'property_maintenance', 'property_management'],
+    'depends': [
+        'base', 
+        'property_maintenance', 
+        'property_management',
+        'property_landlord_management'
+        ],
 
     # always loaded
     'data': [
