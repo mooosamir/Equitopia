@@ -76,22 +76,25 @@ class AccountAnalyticModified(models.Model):
     maintenance_per_property = fields.One2many('maintenance.property', compute="_compute_maintenance")
     frequency = fields.Selection([('Daily', 'Diario'), ('Weekly', 'Semanal'), ('Monthly', 'Mensual'), ('Semestral', 'Semestral'), ('Yearly', 'Anual')], compute='_compute_frequency', string="Frecuencia")
     mirror_contract_id = fields.Many2one('account.analytic.account')
+    tenant_tenancy_id = fields.Many2one('account.analytic.account')
     
     def mirror_contract(self):
-        new_mirror = {
-            'name': self.name,
-            'property_id': self.property_id.id,
-            'property_owner_id': self.property_id.property_owner.id,
-            'date_start': self.date_start,
-            'date': self.date,
-            'chech_in': self.chech_in,
-            'chech_out': self.chech_out,
-            'ten_date': self.ten_date,
-            'frequency': self.frequency,
-            'is_landlord_rent': True,
-        }
-        mirror_record = self.mirror_contract_id.create([new_mirror,])
-        self.mirror_contract_id = mirror_record[0].id
+        if not self.mirror_contract_id:
+            new_mirror = {
+                'name': self.name,
+                'property_id': self.property_id.id,
+                'property_owner_id': self.property_id.property_owner.id,
+                'date_start': self.date_start,
+                'date': self.date,
+                'chech_in': self.chech_in,
+                'chech_out': self.chech_out,
+                'ten_date': self.ten_date,
+                'frequency': self.frequency,
+                'is_landlord_rent': True,
+                'tenant_tenancy_id': self.id,
+            }
+            mirror_record = self.mirror_contract_id.create([new_mirror,])
+            self.mirror_contract_id = mirror_record[0].id
 
 
         return {

@@ -62,7 +62,7 @@
         <!-- Mantenimientos por propiedad -->
         <field name="rent_type_id" position="after">
           <field name="frequency" />
-          <field name="mirror_contract_id" domain="[('is_landlord_rent', '=', 'True')]" />
+	  <field name="mirror_contract_id" readonly="1" context="{'form_view_ref': 'property_landlord_management.landlord_analytic_view_form_id'}" string="Contrato del propietario"/>
         </field>
 
         <xpath expr="//page[@name='history']" position="before">
@@ -118,6 +118,9 @@
         <field name="rent_type_id" position="after">
           <field name="frequency" />
         </field>
+        <field name="deposit_scheme_type" position="after">
+		<field name="tenant_tenancy_id" readonly="1" string="Contrato del inquilino" context="{'form_view_ref': 'property_management.property_analytic_view_form'}"/>
+	</field>
 
         <xpath expr="//page[@name='history']" position="before">
           <page name="tenant_maintenance_page" string="Mantenimientos">
