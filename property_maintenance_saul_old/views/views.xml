@@ -1,16 +1,16 @@
 <odoo>
   <data>
     <record model="ir.ui.view" id="maintenance_view_team_corrected">
-      <field name="model">maintenance.team</field>
-      <field name="inherit_id" ref="maintenance.maintenance_team_view_tree" />
-      <field name="arch" type="xml">
-        <xpath expr="//field[@name='company_id']" position="attributes">
-          <attribute name="invisible">1</attribute>
-        </xpath>
-        <field name="member_ids" position="after">
-          <field name="partner_id" />
+        <field name="model">maintenance.team</field>
+        <field name="inherit_id" ref="maintenance.maintenance_team_view_tree" />
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='company_id']" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </xpath>
+            <field name="member_ids" position="after">
+                <field name="partner_id" />
+            </field>
         </field>
-      </field>
     </record>
 
     <record model="ir.ui.view" id="account_asset_custom_maintenance1">
@@ -51,11 +51,6 @@
             </field>
           </page>
         </xpath>
-
-        <xpath expr="//field[@name='currency_id']" position="after">
-          <field name="commission_value" />
-          <field name="commission_percentage" widget='percentage'/>
-        </xpath>
       </field>
     </record>
 
@@ -67,7 +62,7 @@
         <!-- Mantenimientos por propiedad -->
         <field name="rent_type_id" position="after">
           <field name="frequency" />
-          <field name="mirror_contract_id" readonly="1" context="{'form_view_ref': 'property_landlord_management.landlord_analytic_view_form_id'}" string="Contrato del propietario"/>
+	  <field name="mirror_contract_id" readonly="1" context="{'form_view_ref': 'property_landlord_management.landlord_analytic_view_form_id'}" string="Contrato del propietario"/>
         </field>
 
         <xpath expr="//page[@name='history']" position="before">
@@ -75,17 +70,18 @@
             <field name="maintenance_per_property" readonly="0">
               <tree string="Mantenimientos">
                 <field name="name" />
-                <field name="team_id" />
-                <field name="cost" />
                 <field name="frequency" />
+                <field name="cost" />
+                <field name="team_id" />
                 <field name="charge_to" />
+                <field name="property_id" />
               </tree>
               <form string="Mantenimientos de la propiedad">
                 <group>
                   <field name="name" />
                   <field name="team_id" />
-                  <field name="cost" />
                   <field name="frequency" />
+                  <field name="cost" />
                   <field name="charge_to" />
                 </group>
               </form>
@@ -123,8 +119,8 @@
           <field name="frequency" />
         </field>
         <field name="deposit_scheme_type" position="after">
-          <field name="tenant_tenancy_id" readonly="1" string="Contrato del inquilino" context="{'form_view_ref': 'property_management.property_analytic_view_form'}"/>
-        </field>
+		<field name="tenant_tenancy_id" readonly="1" string="Contrato del inquilino" context="{'form_view_ref': 'property_management.property_analytic_view_form'}"/>
+	</field>
 
         <xpath expr="//page[@name='history']" position="before">
           <page name="tenant_maintenance_page" string="Mantenimientos">
@@ -150,8 +146,9 @@
           </page>
         </xpath>
 
+
       </field>
     </record>
-
+ 
   </data>
 </odoo>

@@ -1,4 +1,5 @@
 from odoo import models, fields, api
+from odoo.exceptions import ValidationError
 import datetime
 
 
@@ -16,6 +17,9 @@ class AccountAssetModified(models.Model):
             inverse_name='property_id',
             store=True)
 
+    commission_percentage = fields.Float(string="Comisión (porcentaje)")
+    commission_value = fields.Float(string="Comisión")
+
     def create_tenancy(self):
         return {
                 'type': 'ir.actions.act_window',
@@ -26,9 +30,17 @@ class AccountAssetModified(models.Model):
                 'view_id': self.env.ref('property_management.property_analytic_view_form').id,
                 'target': 'current',
                 'context': {
-                    'default_property_id': self.id
+                    'default_property_id': self.id,
+                    'default_property_owner_id': self.property_owner,
                     }
                 }
+
+    @api.onchange('commission_percentage', 'commission_value')
+    def check_commission(self):
+        if self.commission_percentage > 100:
+            raise ValidationError('Error en valores de comisión: No puedes elegir un porcentaje mayor al 100%')
+        if self.commission_percentage != 0 and self.commission_value != 0:
+            raise ValidationError('Error en valores de comisión: Solo se puede definir un valor porcentual o fijo, no ambos')
 
 
 class MaintenanceNames(models.Model):
@@ -42,7 +54,7 @@ class MaintenanceNames(models.Model):
 class MaintenancePerProperty(models.Model):
     _name = 'maintenance.property'
 
-    name = fields.Many2one('maintenance.names') 
+    name = fields.Many2one('maintenance.names')
     team_id = fields.Many2one('maintenance.team', string="Equipo responsable")
     cost = fields.Float(string="Costo")
     frequency = fields.Selection([('once', 'Unico'), ('Daily', 'Diario'), ('Weekly', 'Semanal'), ('Monthly', 'Mensual'), ('semestre', 'Semestral'), ('Yearly', 'Anual')], default='once', string="Frecuencia")
@@ -72,13 +84,12 @@ class MaintenancePerProperty(models.Model):
 
 
 
-
 class MaintenanceContract(models.Model):
-    _name = 'maintenance.contract'
+     _name = 'maintenance.contract'
 
-    maintenance_id = fields.Many2one('maintenance.property')
-    charge = fields.Boolean(string="Aplicar cargo")
-    analytic_id = fields.Many2one('account.analytic.account')
+     maintenance_id = fields.Many2one('maintenance.property')
+     charge = fields.Boolean(string="Aplicar cargo")
+     analytic_id = fields.Many2one('account.analytic.account')
 
 
 
@@ -113,10 +124,11 @@ class AccountAnalyticModified(models.Model):
             else:
                 rec.frequency = 'Yearly'
 
-    maintenance_per_property = fields.One2many('maintenance.property', compute="_compute_maintenance")
-    maintenance_per_contract = fields.One2many('maintenance.contract', inverse_name='analytic_id')
+    maintenance_per_property = fields.One2many('maintenance.property')
     frequency = fields.Selection([('Daily', 'Diario'), ('Weekly', 'Semanal'), ('Monthly', 'Mensual'), ('Semestral', 'Semestral'), ('Yearly', 'Anual')], compute='_compute_frequency', string="Frecuencia")
+    # Mirror contract: For tenant view
     mirror_contract_id = fields.Many2one('account.analytic.account')
+    # Mirror contract: For landlord view
     tenant_tenancy_id = fields.Many2one('account.analytic.account')
 
     def mirror_contract(self):
