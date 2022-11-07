@@ -24,7 +24,8 @@
         'base', 
         'property_maintenance', 
         'property_management',
-        'property_landlord_management'
+        'property_landlord_management',
+        'custom_property'
         ],
 
     # always loaded
