@@ -173,31 +173,31 @@ class AccountAnalyticModified(models.Model):
             for maintenance in related_recordset:
                 if maintenance.frequency == 'Daily':
                     times = 0
-                    while times < rec.date - rec.date_start:
-                        self.add_maintenance(rec, rec.date_start + times, maintenance)
+                    while times < rec.chech_in - rec.chech_out:
+                        self.add_maintenance(rec, rec.chech_out + times, maintenance)
                         times += 1
                 elif maintenance.frequency == 'Weekly':
                     times = 0
-                    while times < rec.date - rec.date_start:
-                        self.add_maintenance(rec, rec.date_start + times*8, maintenance)
+                    while times < rec.chech_in - rec.chech_out:
+                        self.add_maintenance(rec, rec.chech_out + times*8, maintenance)
                         times += 1
                 elif maintenance.frequency == 'Montly':
                     times = 0
-                    while times < rec.date - rec.date_start:
-                        self.add_maintenance(rec, rec.date_start + times*32, maintenance)
+                    while times < rec.chech_in - rec.chech_out:
+                        self.add_maintenance(rec, rec.chech_out + times*32, maintenance)
                         times += 1
                 elif maintenance.frequency == 'Semestral':
                     times = 0
-                    while times < rec.date - rec.date_start:
-                        self.add_maintenance(rec, rec.date_start + times*30*6, maintenance)
+                    while times < rec.chech_in - rec.chech_out:
+                        self.add_maintenance(rec, rec.chech_out + times*30*6, maintenance)
                         times += 1
                 elif maintenance.frequency == 'Yearly':
                     times = 0
-                    while times < rec.date - rec.date_start:
-                        self.add_maintenance(rec, rec.date_start + times*365, maintenance)
+                    while times < rec.chech_in - rec.chech_out:
+                        self.add_maintenance(rec, rec.chech_out + times*365, maintenance)
                         times += 1
                 else:
-                    self.add_maintenance(rec, rec.date, maintenance)
+                    self.add_maintenance(rec, rec.chech_in , maintenance)
 
             maintenance_entries = self.env['maintenance.contract'].search([('analytic_id', '=', rec.id)])
             rec.maintenance_per_property = maintenance_entries
@@ -217,9 +217,12 @@ class AccountAnalyticModified(models.Model):
                         'frequency': rec.frequency,
                         'is_landlord_rent': True,
                         'tenant_tenancy_id': rec.id,
+                        'landlord_rent': rec.landlord_rent,
+                        'deposit': rec.deposit,
                         }
                 mirror_record = rec.mirror_contract_id.create([new_mirror,])
                 rec.mirror_contract_id = mirror_record[0].id
+                rec.mirror_contract_id.calular_precios_renta()
 
 
         return res
