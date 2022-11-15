@@ -124,6 +124,13 @@
           <attribute name="invisible">1</attribute>
         </xpath>
 
+
+        <!-- Menus -->
+        <menuitem
+          id="menu_property_admin"
+          name="Administracion"
+          parent="menu_property_main"
+          sequence="9" />
       </field>
     </record>
 

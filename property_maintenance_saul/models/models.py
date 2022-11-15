@@ -171,28 +171,24 @@ class AccountAnalyticModified(models.Model):
                         ]
                     )
             for maintenance in related_recordset:
+                times = datetime.timedelta(0)
                 if maintenance.frequency == 'Daily':
-                    times = 0
                     while times < rec.chech_in - rec.chech_out:
                         self.add_maintenance(rec, rec.chech_out + times, maintenance)
                         times += 1
                 elif maintenance.frequency == 'Weekly':
-                    times = 0
                     while times < rec.chech_in - rec.chech_out:
                         self.add_maintenance(rec, rec.chech_out + times*8, maintenance)
                         times += 1
                 elif maintenance.frequency == 'Montly':
-                    times = 0
                     while times < rec.chech_in - rec.chech_out:
                         self.add_maintenance(rec, rec.chech_out + times*32, maintenance)
                         times += 1
                 elif maintenance.frequency == 'Semestral':
-                    times = 0
                     while times < rec.chech_in - rec.chech_out:
                         self.add_maintenance(rec, rec.chech_out + times*30*6, maintenance)
                         times += 1
                 elif maintenance.frequency == 'Yearly':
-                    times = 0
                     while times < rec.chech_in - rec.chech_out:
                         self.add_maintenance(rec, rec.chech_out + times*365, maintenance)
                         times += 1
