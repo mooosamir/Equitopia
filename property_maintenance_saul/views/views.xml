@@ -126,11 +126,11 @@
 
 
         <!-- Menus -->
-        <menuitem
+        <!--<menuitem
           id="menu_property_admin"
           name="Administracion"
           parent="menu_property_main"
-          sequence="9" />
+        sequence="9" /> -->
       </field>
     </record>
 
