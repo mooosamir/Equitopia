@@ -86,13 +86,8 @@
                 <field name="maintenance_request" context="{'frequency': 'frequency'}" string="Frecuencia" />
                 <field name="table_cost" string="Costo"/>
                 <field name="charge" />
+                <field name="category" />
               </tree>
-              <form string="Mantenimientos de la propiedad">
-                <group>
-                  <field name="maintenance_request" />
-                  <field name="charge" />
-                </group>
-              </form>
             </field>
           </page>
         </xpath>
@@ -106,9 +101,11 @@
         </xpath>
 
         <!-- Contrato espejo -->
+        <!--<xpath 
         <xpath expr="//button[@name='button_maintenance']" position="after">
           <button name="mirror_contract" string="Contrato espejo" type="object"/>
         </xpath>
+        -->
 
         <!-- Campos ocultos -->
         <xpath expr="//field[@name='rent']" position="attributes">
@@ -158,12 +155,6 @@
                 <field name="table_name" />
                 <field name="charge" />
               </tree>
-              <form string="Mantenimientos de la propiedad">
-                <group>
-                  <field name="maintenance_request" />
-                  <field name="charge" />
-                </group>
-              </form>
             </field>
           </page>
         </xpath>

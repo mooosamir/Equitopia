@@ -50,6 +50,13 @@ class MaintenanceNames(models.Model):
     maintenances = fields.One2many('maintenance.request', inverse_name='name')
 
 
+class MaintenanceCategory(models.Model):
+    _name = 'maintenance.category'
+
+    name = fields.Char(string='Nombre de la categoria')
+    maintenances = fields.One2many('maintenance.request', inverse_name='name')
+
+
 
 class MaintenancePerProperty(models.Model):
     _inherit = 'maintenance.request'
@@ -59,6 +66,7 @@ class MaintenancePerProperty(models.Model):
     cost = fields.Float(string="Costo")
     frequency = fields.Selection([('once', 'Unico'), ('Daily', 'Diario'), ('Weekly', 'Semanal'), ('Monthly', 'Mensual'), ('semestre', 'Semestral'), ('Yearly', 'Anual')], default='once', string="Frecuencia")
     to_charge = fields.Selection([('tenant','Inquilino'),('landlord','Propietario'),('admin','Administrador')], string="A cuenta de quien")
+    category = fields.Many2one('maintenance.category', string='Categoria')
     charge = fields.Boolean(string="Aplicar cargo")
 
     property_id = fields.Many2one('account.asset.asset')
@@ -114,6 +122,7 @@ class MaintenanceContract(models.Model):
     table_name = fields.Char(compute='_compute_name', string='Nombre')
     table_cost = fields.Float(compute='_compute_cost', string='Costo')
     table_team = fields.Many2one('maintenance.team', compute='_compute_team', string='Equipo')
+    category = fields.Many2one('maintenance.category', string='Categoria')
 
 
 
@@ -153,8 +162,8 @@ class AccountAnalyticModified(models.Model):
                 'target': 'current',
                 }
 
-    def calular_precios_renta(self):  # FIXME: Typo
-        res = super(AccountAnalyticModified,self).calular_precios_renta()
+    def calcular_precios_renta(self):  # FIXME: Typo
+        res = super(AccountAnalyticModified,self).calcular_precios_renta()
 
         for rec in self:
             if rec.is_landlord_rent:
@@ -215,10 +224,11 @@ class AccountAnalyticModified(models.Model):
                         'tenant_tenancy_id': rec.id,
                         'landlord_rent': rec.landlord_rent,
                         'deposit': rec.deposit,
+                        'tipo_tarifa': rec.tipo_tarifa,
                         }
                 mirror_record = rec.mirror_contract_id.create([new_mirror,])
                 rec.mirror_contract_id = mirror_record[0].id
-                rec.mirror_contract_id.calular_precios_renta()
+                # rec.mirror_contract_id.calcular_precios_renta()
 
 
         return res
@@ -235,11 +245,12 @@ class AccountAnalyticModified(models.Model):
         maintenance_entry.maintenance_request.schedule_date = date
 
     def action_invoice_payment(self):
-        res = super(AccountAssetModified, self).action_invoice_payment() 
+        res = super(AccountAnalyticModified, self).action_invoice_payment() 
 
         for rec in self:
             for maintenance in rec.maintenance_per_property:
                 pass
+        return res
 
 
 
