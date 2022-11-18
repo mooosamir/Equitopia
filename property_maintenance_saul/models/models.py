@@ -13,7 +13,7 @@ class AccountAssetModified(models.Model):
     _inherit = 'account.asset.asset'
 
     maintenance_per_property = fields.One2many(
-            comodel_name='maintenance.request',
+            comodel_name='maintenance.property',
             inverse_name='property_id',
             store=True)
 
@@ -57,8 +57,20 @@ class MaintenanceCategory(models.Model):
     maintenances = fields.One2many('maintenance.request', inverse_name='name')
 
 
+class MaintenanceProperty(models.Model):
+    _name = 'maintenance.property'
 
-class MaintenancePerProperty(models.Model):
+    name = fields.Many2one('maintenance.names')
+    team_id = fields.Many2one('maintenance.team', string="Equipo responsable")
+    cost = fields.Float(string="Costo")
+    frequency = fields.Selection([('once', 'Unico'), ('Daily', 'Diario'), ('Weekly', 'Semanal'), ('Monthly', 'Mensual'), ('semestre', 'Semestral'), ('Yearly', 'Anual')], default='once', string="Frecuencia")
+    to_charge = fields.Selection([('tenant','Inquilino'),('landlord','Propietario'),('admin','Administrador')], string="A cuenta de quien")
+    category = fields.Many2one('maintenance.category', string='Categoria')
+    is_service = fields.Boolean(default=False, string='Es un servicio?')
+    property_id = fields.Many2one('account.asset.asset')
+
+
+class MaintenanceRequestInherit(models.Model):
     _inherit = 'maintenance.request'
 
     name = fields.Many2one('maintenance.names')
@@ -68,63 +80,32 @@ class MaintenancePerProperty(models.Model):
     to_charge = fields.Selection([('tenant','Inquilino'),('landlord','Propietario'),('admin','Administrador')], string="A cuenta de quien")
     category = fields.Many2one('maintenance.category', string='Categoria')
     charge = fields.Boolean(string="Aplicar cargo")
+    is_service = fields.Boolean(default=False, string='Es un servicio?')
 
-    property_id = fields.Many2one('account.asset.asset')
-
-    def name_get(self):
-        context = self.env.context
-        res = []
-        translation = {'once': 'Unico', 'Daily': 'Diario', 'Weekly': 'Semanal', 'Monthly': 'Mensual', 'semestre': 'Semestral', 'Yearly': 'Anual'}
-        for rec in self:
-            res.append((rec.id, translation[rec.frequency]))
-        return res
-
+    maintenance_contract_id= fields.Many2one('maintenance.contract')
+    is_for_tenant = fields.Boolean(default=False)
 
 
 class MaintenanceContract(models.Model):
     _name = 'maintenance.contract'
 
-    def _compute_name(self):
-        for rec in self:
-            rec.table_name = rec.maintenance_request.name.name
-
-    def _compute_team(self):
-        for rec in self:
-            rec.table_team = rec.maintenance_request.team_id
-
-    def _compute_cost(self):
-        for rec in self:
-            rec.table_cost = rec.maintenance_request.cost
-
-    def _compute_frequency(self):
-        for rec in self:
-            val = rec.maintenance_request.frequency
-            if val == 'once':
-                rec.table_frequency = 'Unico'
-            elif val == 'Daily':
-                rec.table_frequency = 'Diario'
-            elif val == 'Weekly':
-                rec.table_frequency = 'Semanal'
-            elif val == 'Monthly':
-                rec.table_frequency = 'Mensual'
-            elif val == 'semestre':
-                rec.table_frequency = 'Semestral'
-            elif val == 'Yearly':
-                rec.table_frequency = 'Anual'
-            else:
-                rec.table_frequency = 'Invalido'
-
-
-    maintenance_request = fields.Many2one('maintenance.request')
+    name = fields.Many2one('maintenance.names')
+    maintenance_requests = fields.One2many('maintenance.request', inverse_name='maintenance_contract_id')
     charge = fields.Boolean(string="Aplicar cargo")
     analytic_id = fields.Many2one('account.analytic.account')
     property_id = fields.Many2one('account.asset.asset')
-    table_name = fields.Char(compute='_compute_name', string='Nombre')
-    table_cost = fields.Float(compute='_compute_cost', string='Costo')
-    table_team = fields.Many2one('maintenance.team', compute='_compute_team', string='Equipo')
+    cost = fields.Float(string='Costo')
+    team = fields.Many2one('maintenance.team', string='Equipo responsable') #,compute='_compute_team', )
+    frequency = fields.Selection([('once', 'Unico'),('Daily', 'Diario'), ('Weekly', 'Semanal'), ('Monthly', 'Mensual'), ('Semestral', 'Semestral'), ('Yearly', 'Anual')], string="Frecuencia")
     category = fields.Many2one('maintenance.category', string='Categoria')
-    schedule_date = fields.Datetime('Fecha programada')
+    schedule_date = fields.Datetime('Fecha programada', required=True)
+    is_service = fields.Boolean(default=False, string='Es un servicio?')
 
+    @api.onchange('team')
+    def update_teams(self):
+        for rec in self:
+            for request in rec.maintenance_requests:
+                request.team = rec.team.id
 
 
 class AccountAnalyticModified(models.Model):
@@ -151,21 +132,33 @@ class AccountAnalyticModified(models.Model):
     # Mirror contract: For landlord view
     tenant_tenancy_id = fields.Many2one('account.analytic.account')
 
-    def mirror_contract(self):
+    def add_contract_maintenance(self, rec, maintenance):
+        self.env['maintenance.contract'].create([{
+            'name': maintenance.name.id,
+            'frequency': maintenance.frequency,
+            'analytic_id': rec.id,
+            'property_id': rec.property_id.id,
+            'schedule_date': rec.chech_in,
+            'team': maintenance.team_id.id,
+            'cost': maintenance.cost,
+            'charge': True,
+            'is_service': maintenance.is_service,
+            }])
 
-        return {
-                'type': 'ir.actions.act_window',
-                'view_id': self.env.ref('property_landlord_management.landlord_analytic_view_form_id').id,
-                'view_type': 'form',
-                'view_mode': 'form',
-                'res_model' : 'account.analytic.account',
-                'res_id': self.mirror_contract_id.id,
-                'target': 'current',
-                }
+    def create_maintenance_request(self, rec, maintenance, times, times_factor, once=False):
+        return self.env["maintenance.request"].create([{
+            'name': maintenance.name.id,
+            'team_id': maintenance.team.id,
+            'schedule_date': maintenance.schedule_date + times * times_factor if not once else rec.chech_out,
+            'property_id': maintenance.property_id.id,
+            'tenant_id': rec.tenant_id.id,
+            'maintenance_contract_id': maintenance.id,
+            'is_for_tenant': True,
+            'is_service': maintenance.is_service,
+            }])
 
-    def calcular_precios_renta(self):  # FIXME: Typo
-        res = super(AccountAnalyticModified,self).calcular_precios_renta()
 
+    def load_maintenance_requests(self):
         for rec in self:
             if rec.is_landlord_rent:
                 to_charge_query = 'landlord'
@@ -181,42 +174,38 @@ class AccountAnalyticModified(models.Model):
                         ]
                     )
             for maintenance in related_recordset:
-                times = datetime.timedelta(0)
-                if maintenance.frequency == 'Daily':
-                    while times < rec.chech_in - rec.chech_out:
-                        self.add_maintenance(rec, rec.chech_out + times, maintenance)
-                        times += 1
-                elif maintenance.frequency == 'Weekly':
-                    while times < rec.chech_in - rec.chech_out:
-                        self.add_maintenance(rec, rec.chech_out + times*8, maintenance)
-                        times += 1
-                elif maintenance.frequency == 'Montly':
-                    while times < rec.chech_in - rec.chech_out:
-                        self.add_maintenance(rec, rec.chech_out + times*32, maintenance)
-                        times += 1
-                elif maintenance.frequency == 'Semestral':
-                    while times < rec.chech_in - rec.chech_out:
-                        self.add_maintenance(rec, rec.chech_out + times*30*6, maintenance)
-                        times += 1
-                elif maintenance.frequency == 'Yearly':
-                    while times < rec.chech_in - rec.chech_out:
-                        self.add_maintenance(rec, rec.chech_out + times*365, maintenance)
-                        times += 1
-                else:
-                    self.add_maintenance(rec, rec.chech_in , maintenance)
+                self.add_contract_maintenance(rec, maintenance)
 
-            maintenance_entries = self.env['maintenance.contract'].search([('analytic_id', '=', rec.id)])
-            rec.maintenance_per_property = maintenance_entries
+            rec.maintenance_per_property = self.env['maintenance.contract'].search([('analytic_id', '=', rec.id)])
+
             for maintenance in rec.maintenance_per_property:
-                maintenance.maintenance_request = self.env["maintenance.request"].create([{
-                    'name': maintenance.maintenance_request.name.id,
-                    'team_id': maintenance.maintenance_request.team_id.id,
-                    'schedule_date': maintenance.schedule_date,
-                    'property_id': maintenance.property_id.id,
-                    'tenant_id': rec.tenant_id.id,
-                }])
-                maintenance.maintenance_request.schedule_date = maintenance.schedule_date
+                times = datetime.timedelta(0)
+                maintenance_requests = []
+                if maintenance.frequency == 'Daily':
+                    while times < rec.chech_out - rec.chech_in:
+                        maintenance_requests.append(self.create_maintenance_request(rec, maintenance, times, 1))
+                        times += datetime.timedelta(1)
+                elif maintenance.frequency == 'Weekly':
+                    while times < rec.chech_out - rec.chech_in:
+                        maintenance_requests.append(self.create_maintenance_request(rec, maintenance, times, 8))
+                        times += datetime.timedelta(1)
+                elif maintenance.frequency == 'Monthly':
+                    while times < rec.chech_out - rec.chech_in:
+                        maintenance_requests.append(self.create_maintenance_request(rec, maintenance, times, 32))
+                        times += datetime.timedelta(1)
+                elif maintenance.frequency == 'Semestral':
+                    while times < rec.chech_out - rec.chech_in:
+                        maintenance_requests.append(self.create_maintenance_request(rec, maintenance, times, 30*6))
+                        times += datetime.timedelta(1)
+                elif maintenance.frequency == 'Yearly':
+                    while times < rec.chech_out - rec.chech_in:
+                        maintenance_requests.append(self.create_maintenance_request(rec, maintenance, times, 365))
+                        times += datetime.timedelta(1)
+                else:
+                    maintenance_requests.append(self.create_maintenance_request(rec, maintenance, times, 1, once=True))
+                maintenance.maintenance_requests = self.env['maintenance.request'].search([('maintenance_contract_id', '=', maintenance.id)]) 
 
+    def create_mirror_contract(self):
         # Mirror contract
         for rec in self:
             if not rec.mirror_contract_id:
@@ -238,29 +227,48 @@ class AccountAnalyticModified(models.Model):
                         }
                 mirror_record = rec.mirror_contract_id.create([new_mirror,])
                 rec.mirror_contract_id = mirror_record[0].id
-                #rec.mirror_contract_id.landlord_button_start()
 
+    def create_maintenance_payments(self):
+        for rec in self:
+            for contract_maintenance in rec.maintenance_per_property:
+                for maintenance in contract_maintenance.maintenance_requests:
+                    vard_data={
+                            'start_date':maintenance.schedule_date,
+                            'amount':contract_maintenance.cost,
+                            'pen_amt':contract_maintenance.cost,
+                            'property_id': rec.property_id.id,
+                            'tenancy_id': rec.tenant_id.id,
+                            'currency_id': rec.currency_id.id or False,
+                            'rel_tenant_id': rec.tenant_id.id,									
+                            }
+                    self.write({
+                        'rent_schedule_ids':[(0,0,vard_data)]
+                        })
+        self.set_number_pay()  # wtf
+
+    def calcular_precios_renta(self):
+        res = super(AccountAnalyticModified,self).calcular_precios_renta()
+
+        self.load_maintenance_requests()
+        self.create_mirror_contract()
 
         return res
-
-    def add_maintenance(self, rec, date, maintenance):
-        new_maintenance = {
-                'maintenance_request': maintenance.id,
-                'analytic_id': rec.id,
-                'property_id': rec.property_id.id,
-                'charge': True,
-                'schedule_date': date
-            }
-
-        maintenance_entry = rec.maintenance_per_property.create([new_maintenance,])
 
     def action_invoice_payment(self):
         res = super(AccountAnalyticModified, self).action_invoice_payment() 
 
         for rec in self:
             for maintenance in rec.maintenance_per_property:
-                pass
+                self.create_maintenance_payments()
         return res
 
+    def propertary_tenant_start(self):
+        self.load_maintenance_requests()
+        self.action_invoice_payment()  # Generate maintenance invoices
 
 
+class TenancyRentScheduleModified(models.Model):
+    _inherit = 'tenancy.rent.schedule'
+
+    is_service = fields.Boolean()
+    maintenance_id = fields.Many2one('maintenance.request')

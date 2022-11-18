@@ -38,7 +38,7 @@
 
         <xpath expr="//page[@name='sub_properties']" position="before">
           <page name="maintenance_by_property_page" string="Mantenimiento">
-            <field name="maintenance_per_property">
+            <field name="maintenance_per_property" domain="[('is_for_tenant', '=', 'False')]">
               <tree string="Mantenimientos de la propiedad">
                 <field name="name" />
                 <field name="team_id" />
@@ -81,10 +81,10 @@
           <page name="tenant_maintenance_page" string="Mantenimientos">
             <field name="maintenance_per_property" readonly="0">
               <tree string="Mantenimientos">
-                <field name="table_name" string="Nombre" />
-                <field name="table_team" string="Equipo" />
-                <field name="maintenance_request" context="{'frequency': 'frequency'}" string="Frecuencia" />
-                <field name="table_cost" string="Costo"/>
+                <field name="name" string="Nombre" />
+                <field name="team" string="Equipo" />
+                <field name="frequency" />
+                <field name="cost" string="Costo"/>
                 <field name="charge" />
                 <field name="category" />
               </tree>
@@ -152,10 +152,10 @@
           <page name="tenant_maintenance_page" string="Mantenimientos">
             <field name="maintenance_per_property" readonly="0">
               <tree string="Mantenimientos">
-                <field name="table_name" string="Nombre" />
-                <field name="table_team" string="Equipo" />
-                <field name="maintenance_request" context="{'frequency': 'frequency'}" string="Frecuencia" />
-                <field name="table_cost" string="Costo"/>
+                <field name="name" string="Nombre" />
+                <field name="team" string="Equipo" />
+                <field name="frequency" />
+                <field name="cost" string="Costo"/>
                 <field name="charge" />
                 <field name="category" />
               </tree>
