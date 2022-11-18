@@ -74,7 +74,7 @@
         <!-- Mantenimientos por propiedad -->
         <field name="rent_type_id" position="after">
           <field name="frequency" />
-          <field name="mirror_contract_id" readonly="1" context="{'form_view_ref': 'property_landlord_management.landlord_analytic_view_form_id'}" string="Contrato del propietario" attrs="{'invisible': [('state', '=', 'open')]}"/>
+          <field name="mirror_contract_id" readonly="1" context="{'form_view_ref': 'property_landlord_management.landlord_analytic_view_form_id'}" string="Contrato del propietario"/>
         </field>
 
         <xpath expr="//page[@name='history']" position="before">
@@ -152,8 +152,12 @@
           <page name="tenant_maintenance_page" string="Mantenimientos">
             <field name="maintenance_per_property" readonly="0">
               <tree string="Mantenimientos">
-                <field name="table_name" />
+                <field name="table_name" string="Nombre" />
+                <field name="table_team" string="Equipo" />
+                <field name="maintenance_request" context="{'frequency': 'frequency'}" string="Frecuencia" />
+                <field name="table_cost" string="Costo"/>
                 <field name="charge" />
+                <field name="category" />
               </tree>
             </field>
           </page>

@@ -123,6 +123,7 @@ class MaintenanceContract(models.Model):
     table_cost = fields.Float(compute='_compute_cost', string='Costo')
     table_team = fields.Many2one('maintenance.team', compute='_compute_team', string='Equipo')
     category = fields.Many2one('maintenance.category', string='Categoria')
+    schedule_date = fields.Datetime('Fecha programada')
 
 
 
@@ -206,6 +207,15 @@ class AccountAnalyticModified(models.Model):
 
             maintenance_entries = self.env['maintenance.contract'].search([('analytic_id', '=', rec.id)])
             rec.maintenance_per_property = maintenance_entries
+            for maintenance in rec.maintenance_per_property:
+                maintenance.maintenance_request = self.env["maintenance.request"].create([{
+                    'name': maintenance.maintenance_request.name.id,
+                    'team_id': maintenance.maintenance_request.team_id.id,
+                    'schedule_date': maintenance.schedule_date,
+                    'property_id': maintenance.property_id.id,
+                    'tenant_id': rec.tenant_id.id,
+                }])
+                maintenance.maintenance_request.schedule_date = maintenance.schedule_date
 
         # Mirror contract
         for rec in self:
@@ -228,7 +238,7 @@ class AccountAnalyticModified(models.Model):
                         }
                 mirror_record = rec.mirror_contract_id.create([new_mirror,])
                 rec.mirror_contract_id = mirror_record[0].id
-                # rec.mirror_contract_id.calcular_precios_renta()
+                #rec.mirror_contract_id.landlord_button_start()
 
 
         return res
@@ -238,11 +248,11 @@ class AccountAnalyticModified(models.Model):
                 'maintenance_request': maintenance.id,
                 'analytic_id': rec.id,
                 'property_id': rec.property_id.id,
-                'charge': True, 
-                }
+                'charge': True,
+                'schedule_date': date
+            }
 
         maintenance_entry = rec.maintenance_per_property.create([new_maintenance,])
-        maintenance_entry.maintenance_request.schedule_date = date
 
     def action_invoice_payment(self):
         res = super(AccountAnalyticModified, self).action_invoice_payment() 
