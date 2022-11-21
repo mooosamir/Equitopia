@@ -87,7 +87,7 @@ class Account_asset_asset_customs(models.Model):
 				if not line.tipo_renta:
 					raise ValidationError("Un campo de tipo de renta esta vacio")
 				for item in existe_dict_lines_tarifas.keys():
-					if line.tipo_tarifa==item and line.tipo_renta==dic[item]:
+					if line.tipo_tarifa==item and line.tipo_renta==existe_dict_lines_tarifas[item]:
 						raise ValidationError("No puede haber tarfia repetida")
 
 				#if line.tipo_tarifa in existe_reacord_lines_tarifa and line.tipo_renta in existe_reacord_lines_renta:
@@ -202,9 +202,12 @@ class Account_analytic_account_bh(models.Model):
 			return tarifa_dias #rango tres
 
 
-	def calular_precios_renta(self):
+	def calcular_precios_renta(self):
 		if not self.property_owner_id:
-			raise UserError("El campo de dueño esta vacio")
+			ṕropiedad=self.env['account.asset.asset'].search([
+				('id','=',self.property_id.id)])
+			self.property_owner_id=ṕropiedad.property_owner.id
+			#raise UserError("El campo de dueño esta vacio")
 		if not self.chech_in:
 			raise UserError("Favor de marcar la hora de entrada")
 		if not self.chech_out:
@@ -227,8 +230,16 @@ class Account_analytic_account_bh(models.Model):
 		if self.property_id.property_manager:
 			partner_ids.append(self.property_id.property_manager.id)
 
+		name_name=''
+		if self.property_id.name:
+			name_name+=self.property_id.name+":"
+		if self.code:
+			name_name+=self.code+"/"
+		if self.tenant_id.name:
+			name_name+=self.tenant_id.name
+
 		data_calendary={
-        'name':self.property_id.name+":"+self.code+"/"+self.tenant_id.name,
+        'name':name_name,
         'partner_ids':partner_ids,
 		'start':self.chech_in,
         'stop':self.chech_out,
@@ -241,7 +252,7 @@ class Account_analytic_account_bh(models.Model):
 		for tenancy_rec in self:
 			day_diff=(self.chech_out-self.chech_in).days
 			tarifa_select=self.buscar_rango(day_diff)
-			if not tarifa_select:
+			if len(tarifa_select)==0:
 				raise UserError("No se encontro una tarifa para usuar")
 			d1=self.chech_in
 			#DIARIO
@@ -377,13 +388,21 @@ class Account_analytic_account_bh(models.Model):
 		for payment in self.rent_schedule_ids:
 			if not payment.invc_id:
 				inv_line_values = payment.get_invloice_lines()
+				inv_line_dict = inv_line_values[0][2]
+				inv_line_dict.update({
+					'name': payment.maintenance_id.name.name if payment.maintenance_id else 'Pago de renta',
+					'is_service': payment.is_service,
+					'maintenance_id': payment.maintenance_id.id,
+				})
+				#raise UserError(str(inv_line_dict))
+				new_line_values = [(0, 0, inv_line_dict)]
 				inv_values = {
 					'partner_id': payment.tenancy_id.tenant_id.parent_id.id or False,
 					'type': 'out_invoice',
 					'property_id': payment.tenancy_id.property_id.id or False,
 					'invoice_date': datetime.now().strftime(
 						DEFAULT_SERVER_DATE_FORMAT) or False,
-					'invoice_line_ids': inv_line_values,
+					'invoice_line_ids': new_line_values,
 					'new_tenancy_id': payment.tenancy_id.id,
 					'numero_pagos':payment.hecho_pago,
 					'invoice_date_due':payment.start_date,
@@ -410,6 +429,9 @@ class Account_analytic_account_bh(models.Model):
                 'account_id':
                     invoice_teancy.tenancy_id.property_id.expense_account_id.id or False,
                 'analytic_account_id': invoice_teancy.tenancy_id.id or False,
+				'name': invoice_teancy.maintenance_id.name.name if invoice_teancy.maintenance_id else 'Pago de renta',
+				'is_service': invoice_teancy.is_service,
+				'maintenance_id': invoice_teancy.maintenance_id.id,
            		}
 				owner_rec = invoice_teancy.tenancy_id.property_owner_id
 				invo_values = {
@@ -504,6 +526,7 @@ class Account_analytic_account_bh(models.Model):
 		"""
 		dates_calendar=self.env['calendar.event'].search([])
 
+
 		date_is_range_busy_start=False
 		date_is_range_busy_stop=False
 		for calen_dete in dates_calendar:
@@ -523,3 +546,35 @@ class Account_analytic_account_bh(models.Model):
 		for item in rangos:
 			busy_days+=self.get_correct_date_show(item.start)+" > "+self.get_correct_date_show(item.stop)+"\n"
 		self.rate_busy=busy_days
+
+	def get_correct_date_show(self,fecha):
+		"""
+		Convertir la fecha que esta guarda en la base de datos a una que sea
+		totalmente funcional 
+		"""
+		if fecha:			
+			user_tz = self.env.user.tz or pytz.utc
+			local = pytz.timezone(user_tz)
+			fecha_real=datetime.strftime(pytz.utc.localize
+				(datetime.strptime(fecha.strftime("%Y-%m-%d %H:%M:%S"), DEFAULT_SERVER_DATETIME_FORMAT)).
+				astimezone(local),"%d-%m-%Y %H:%M:%S")
+			return fecha_real
+
+	# @api.onchange('chech_in','chech_out')
+	# def _onchange_chechinout(self):
+	# 	for rec in self:
+	# 		rangos=self.env['calendar.event'].search(
+	# 			[('property_calendary','=',rec.property_id.id),
+	# 			('start_date','<=',self.get_correct_date_show(rec.chech_in)),
+	# 			('stop_date','>=',self.get_correct_date_show(rec.chech_out))])
+	# 		if len(rangos)>0:
+	# 			raise UserError("La el rengo seleccionado ya esta reservado")
+
+
+# Codigo por Saul
+class AccounMoveLineModified(models.Model):
+	_inherit = 'account.move.line'
+
+	is_service = fields.Boolean(default=False, string="Es un servicio?")
+	maintenance_id = fields.Many2one('maintenance.request', string="Mantenimiento")
+	    

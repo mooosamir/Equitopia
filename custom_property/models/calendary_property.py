@@ -22,5 +22,3 @@ class Calendar_event_manager(models.Model):
 	)
 
 
-
-

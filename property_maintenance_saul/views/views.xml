@@ -45,6 +45,7 @@
                 <field name="frequency" />
                 <field name="cost" />
                 <field name="to_charge" />
+                <field name="is_service" />
               </tree>
               <form string="Mantenimientos de la propiedad">
                 <group>
@@ -53,6 +54,7 @@
                   <field name="frequency" />
                   <field name="cost" />
                   <field name="to_charge" />
+                  <field name="is_service" />
                 </group>
               </form>
             </field>

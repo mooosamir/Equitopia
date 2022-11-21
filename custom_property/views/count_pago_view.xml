@@ -46,6 +46,7 @@
                    <field name="hora_salida" widget="float_time" class="oe_inline"/> <span class="ml8">horas</span>
                  </div>        
          </xpath>
+
          <xpath expr="//field[@name='currency_id']" position="after">
            <field name="entrega_acceso_id"/>
          </xpath>
@@ -89,12 +90,12 @@
     <field name="model">account.analytic.account</field>
     <field name="inherit_id" ref="property_management.property_analytic_view_form"/>
     <field name="arch" type="xml">  
-       
-       <xpath expr="//field[@name='contact_id']" position="after">
+
+        <xpath expr="//field[@name='contact_id']" position="after">
            <field name="tipo_tarifa" required="1"/>       
          </xpath>
        <xpath expr="//button[@name='button_start']" position="replace">
-        <button name="calular_precios_renta" string="Inicio" states="draft"  type="object" icon="fa-play" class="oe_highlight"/>
+        <button name="calcular_precios_renta" string="Inicio" states="draft"  type="object" icon="fa-play" class="oe_highlight"/>
        </xpath> 
        <xpath expr="//button[@name='button_close']" position="after">
           <button name="action_quotation_send" string="Enviar correo" type="object" icon="fa-envelope" class="oe_highlight"/>
@@ -172,6 +173,10 @@
     	 <xpath expr="//field[@name='company_id']" position="after">
            <field name="numero_pagos" readonly="1"/>
          </xpath>
+       <xpath expr="//field[@name='price_subtotal']" position="after">
+          <field name="is_service" />
+          <field name="maintenance_id" />
+       </xpath>
     </field>
    </record>
   </data>
