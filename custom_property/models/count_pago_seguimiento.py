@@ -54,7 +54,12 @@ class Account_move_hp(models.Model):
 
 	_inherit='account.move'
 
-	numero_pagos=fields.Char(string='Numero de pago')
+	numero_pagos = fields.Char(string='Numero de pago')
+
+class Account_payment_custom(models.Model):
+    _inherit = 'account.payment'
+
+    tipo_de_pago = fields.Selection([('r', "Renta"), ("m", "Mantenimiento"), ("s", "Servicio"), ("o", "Otros")])
 
 class Account_asset_asset_customs(models.Model):
 

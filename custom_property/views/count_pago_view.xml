@@ -179,5 +179,17 @@
        </xpath>
     </field>
    </record>
+
+    <record id="custom_property_count_move_inheriti" model="ir.ui.view">
+    <field name="name">custom_property_account_payment.inherit</field>
+    <field name="model">account.payment</field>
+    <field name="inherit_id" ref="account.view_account_payment_invoice_form"/>
+    <field name="arch" type="xml">  
+       <xpath expr="//field[@name='property_id']" position="after">
+         <field name="tipo_de_pago" />
+       </xpath>
+    </field>
+   </record>
+
   </data>
 </odoo>
