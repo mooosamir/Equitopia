@@ -65,7 +65,11 @@
           <field name="commission_value" />
           <field name="commission_percentage" widget='percentage'/>
         </xpath>
+      <xpath expr="//field[@name='current_tenant_id']" position="attributes">
+        <attribute name="default_order">ten_date</attribute>
+      </xpath>
       </field>
+
     </record>
 
     <record model="ir.ui.view" id="account_analytic_saul_maintenance1">
