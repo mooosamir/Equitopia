@@ -234,6 +234,7 @@ class AccountAnalyticModified(models.Model):
             if not rec.mirror_contract_id:
                 new_mirror = {
                     'name': rec.name,
+                    'code': 'LL/' + rec.code[2:],
                     'property_id': rec.property_id.id,
                     'property_owner_id': rec.property_id.property_owner.id,
                     'date_start': rec.date_start,
