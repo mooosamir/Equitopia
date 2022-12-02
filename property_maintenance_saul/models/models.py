@@ -220,7 +220,7 @@ class AccountAnalyticModified(models.Model):
                         'rel_tenant_id': rec.tenant_id.id,									
                         'is_service': maintenance_request.is_service,
                         'maintenance_id': maintenance_request.id,
-                        'notes': maintenance_request.name.name,
+                        #'notes': maintenance_request.name.name,
                     }
                     rec.write({
                         'rent_schedule_ids':[(0,0,vard_data)]
