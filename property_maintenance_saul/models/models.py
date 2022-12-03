@@ -6,7 +6,6 @@ import datetime
 from odoo.exceptions import UserError,ValidationError
 
 
-
 class MaintenanceTeamModified(models.Model):
     _inherit = 'maintenance.team'
 
@@ -272,4 +271,33 @@ class TenancyRentScheduleModified(models.Model):
     is_service = fields.Boolean()
     maintenance_id = fields.Many2one('maintenance.request')
 
+
+class AccountMoveModified(models.Model):
+    _inherit = 'account.move'
+
+    def action_invoice_register_payment(self):
+        res = super(AccountMoveModified, self).action_invoice_register_payment()
+        new_context = res['context'].copy()
+
+        payment = self.invoice_line_ids[0]
+        if payment.is_service:
+            new_context.update({'default_tipo_de_pago': 's'})
+        elif not str(payment.maintenance_id) == 'maintenance.request()': 
+            new_context.update({'default_tipo_de_pago': 'm'})
+        else:
+            new_context.update({'default_tipo_de_pago': 'r'})
+        res.update({
+            'context': new_context,
+            # 'view_id': 
+        })
+        return res
+
+ 
+class AccountPaymentModified(models.Model):
+    _inherit = 'account.payment'
+
+    def post(self):
+        res = super(AccountPaymentModified, self).post()
+        # raise UserError(str(res))
+        return res
 
