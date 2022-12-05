@@ -61,13 +61,25 @@
           </page>
         </xpath>
 
-        <xpath expr="//field[@name='currency_id']" position="after">
-          <field name="commission_value" />
-          <field name="commission_percentage" widget='percentage'/>
+        <xpath expr="//field[@name='current_tenant_id']" position="attributes">
+          <attribute name="default_order">ten_date</attribute>
         </xpath>
-      <xpath expr="//field[@name='current_tenant_id']" position="attributes">
-        <attribute name="default_order">ten_date</attribute>
-      </xpath>
+
+        <!--
+        <xpath expr="//page[@name='photos']" position='after'>
+          <page name="comisiones" string="Comisiones">
+            <field name="commission_ids">
+              <tree string="Comisiones">
+                <group>
+                  <field name="commission_value" />
+                  <field name="commission_percentage" />
+                </group>
+              </tree>
+            </field>
+          </page>
+        </xpath>
+        -->
+
       </field>
 
     </record>
@@ -108,81 +120,81 @@
 
         <!-- Contrato espejo -->
         <!--<xpath 
-        <xpath expr="//button[@name='button_maintenance']" position="after">
+          <xpath expr="//button[@name='button_maintenance']" position="after">
           <button name="mirror_contract" string="Contrato espejo" type="object"/>
-        </xpath>
+          </xpath>
         -->
 
-        <!-- Campos ocultos -->
-        <xpath expr="//field[@name='rent']" position="attributes">
-          <attribute name="invisible">1</attribute>
-        </xpath>
-        <xpath expr="//field[@name='date']" position="attributes">
-          <attribute name="invisible">1</attribute>
-        </xpath>
-        <xpath expr="//field[@name='date_start']" position="attributes">
-          <attribute name="invisible">1</attribute>
-        </xpath>
-        <xpath expr="//field[@name='rent_type_id']" position="attributes">
-          <attribute name="invisible">1</attribute>
-        </xpath>
+          <!-- Campos ocultos -->
+          <xpath expr="//field[@name='rent']" position="attributes">
+            <attribute name="invisible">1</attribute>
+          </xpath>
+          <xpath expr="//field[@name='date']" position="attributes">
+            <attribute name="invisible">1</attribute>
+          </xpath>
+          <xpath expr="//field[@name='date_start']" position="attributes">
+            <attribute name="invisible">1</attribute>
+          </xpath>
+          <xpath expr="//field[@name='rent_type_id']" position="attributes">
+            <attribute name="invisible">1</attribute>
+          </xpath>
 
 
-        <!-- Menus -->
-        <!--<menuitem
-          id="menu_property_admin"
-          name="Administracion"
-          parent="menu_property_main"
-        sequence="9" /> -->
-      </field>
-    </record>
-
-    <record model="ir.ui.view" id="account_anlytic_landlord_custom_maintenance">
-      <field name="model">account.analytic.account</field>
-      <field name="inherit_id" ref="property_landlord_management.landlord_analytic_view_form_id" />
-      <field name="arch" type="xml">
-
-        <xpath expr="//field[@name='rent_type_id']" position="attributes">
-          <attribute name="required">0</attribute>
-        </xpath>
-
-        <!-- Mantenimientos por propiedad -->
-        <field name="rent_type_id" position="after">
-          <field name="frequency" />
+          <!-- Menus -->
+          <!--<menuitem
+            id="menu_property_admin"
+            name="Administracion"
+            parent="menu_property_main"
+          sequence="9" /> -->
         </field>
-        <field name="deposit_scheme_type" position="after">
-          <field name="tenant_tenancy_id" readonly="1" string="Contrato del inquilino" context="{'form_view_ref': 'property_management.property_analytic_view_form'}"/>
+      </record>
+
+      <record model="ir.ui.view" id="account_anlytic_landlord_custom_maintenance">
+        <field name="model">account.analytic.account</field>
+        <field name="inherit_id" ref="property_landlord_management.landlord_analytic_view_form_id" />
+        <field name="arch" type="xml">
+
+          <xpath expr="//field[@name='rent_type_id']" position="attributes">
+            <attribute name="required">0</attribute>
+          </xpath>
+
+          <!-- Mantenimientos por propiedad -->
+          <field name="rent_type_id" position="after">
+            <field name="frequency" />
+          </field>
+          <field name="deposit_scheme_type" position="after">
+            <field name="tenant_tenancy_id" readonly="1" string="Contrato del inquilino" context="{'form_view_ref': 'property_management.property_analytic_view_form'}"/>
+          </field>
+
+          <xpath expr="//page[@name='history']" position="before">
+            <page name="tenant_maintenance_page" string="Mantenimientos">
+              <field name="maintenance_per_property" readonly="0">
+                <tree string="Mantenimientos">
+                  <field name="name" string="Nombre" />
+                  <field name="team" string="Equipo" />
+                  <field name="frequency" />
+                  <field name="cost" string="Costo"/>
+                  <field name="charge" />
+                  <field name="category" />
+                </tree>
+              </field>
+            </page>
+          </xpath>
+
         </field>
+      </record>
 
-        <xpath expr="//page[@name='history']" position="before">
-          <page name="tenant_maintenance_page" string="Mantenimientos">
-            <field name="maintenance_per_property" readonly="0">
-              <tree string="Mantenimientos">
-                <field name="name" string="Nombre" />
-                <field name="team" string="Equipo" />
-                <field name="frequency" />
-                <field name="cost" string="Costo"/>
-                <field name="charge" />
-                <field name="category" />
-              </tree>
-            </field>
-          </page>
-        </xpath>
+      <record model="ir.ui.view" id="account_payment_modified">
+        <field name="model">account.payment</field>
+        <field name="inherit_id" ref="account.view_account_payment_invoice_form" />
+        <field name="arch" type="xml">
+          <xpath expr="//field[@name='calc_balance']" position="after">
+            <field name="payment_type" invisible="0" />
+            <field name="partner_type" invisible="0" />
+            <field name="partner_id" invisible="0" />
+          </xpath>
+        </field>
+      </record>
 
-      </field>
-    </record>
-
-    <record model="ir.ui.view" id="account_payment_modified">
-      <field name="model">account.payment</field>
-      <field name="inherit_id" ref="account.view_account_payment_invoice_form" />
-      <field name="arch" type="xml">
-        <xpath expr="//field[@name='calc_balance']" position="after">
-          <field name="payment_type" invisible="0" />
-          <field name="partner_type" invisible="0" />
-          <field name="partner_id" invisible="0" />
-        </xpath>
-      </field>
-    </record>
-
-  </data>
-</odoo>
+    </data>
+  </odoo>

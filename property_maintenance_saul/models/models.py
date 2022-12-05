@@ -12,31 +12,12 @@ class MaintenanceTeamModified(models.Model):
     partner_id = fields.Many2one('res.partner', string='Company')
 
 
-class AccountAssetModified(models.Model):
-    _inherit = 'account.asset.asset'
-
-    maintenance_per_property = fields.One2many(
-        comodel_name='maintenance.property',
-        inverse_name='property_id',
-        store=True)
+class AccountComission(models.Model):
+    _name = 'account.asset.commission'
 
     commission_percentage = fields.Float(string="Comisión (porcentaje)")
     commission_value = fields.Float(string="Comisión")
-
-    def create_tenancy(self):
-        return {
-            'type': 'ir.actions.act_window',
-            'name': 'Crear contrato',
-            'res_model': 'account.analytic.account',
-            'view_type': 'form',
-            'view_mode': 'form',
-            'view_id': self.env.ref('property_management.property_analytic_view_form').id,
-            'target': 'current',
-            'context': {
-                'default_property_id': self.id,
-                'default_property_owner_id': self.property_owner.id,
-            }
-        }
+    property_id = fields.Many2one('account.asset.asset')
 
     @api.onchange('commission_percentage', 'commission_value')
     def check_commission(self):
@@ -44,6 +25,31 @@ class AccountAssetModified(models.Model):
             raise ValidationError('Error en valores de comisión: No puedes elegir un porcentaje mayor al 100%')
         if self.commission_percentage != 0 and self.commission_value != 0:
             raise ValidationError('Error en valores de comisión: Solo se puede definir un valor porcentual o fijo, no ambos')
+
+
+class AccountAssetModified(models.Model):
+    _inherit = 'account.asset.asset'
+
+    maintenance_per_property = fields.One2many(
+            comodel_name='maintenance.property',
+            inverse_name='property_id',
+            store=True)
+    commission_ids = fields.One2many('account.asset.commission', inverse_name='property_id', string='Comisiones')
+
+    def create_tenancy(self):
+        return {
+                'type': 'ir.actions.act_window',
+                'name': 'Crear contrato',
+                'res_model': 'account.analytic.account',
+                'view_type': 'form',
+                'view_mode': 'form',
+                'view_id': self.env.ref('property_management.property_analytic_view_form').id,
+                'target': 'current',
+                'context': {
+                    'default_property_id': self.id,
+                    'default_property_owner_id': self.property_owner.id,
+                    }
+                }
 
 
 class MaintenanceNames(models.Model):
@@ -146,7 +152,7 @@ class AccountAnalyticModified(models.Model):
             'cost': maintenance.cost,
             'charge': True,
             'is_service': maintenance.is_service,
-        }])
+            }])
 
     def create_maintenance_request(self, rec, maintenance, times, times_factor, once=False):
         return self.env["maintenance.request"].create([{
@@ -159,7 +165,7 @@ class AccountAnalyticModified(models.Model):
             'is_for_tenant': True,
             'is_service': maintenance.is_service,
             'cost': maintenance.cost,
-        }])
+            }])
 
 
     def load_maintenance_requests(self):
@@ -169,14 +175,14 @@ class AccountAnalyticModified(models.Model):
             else:
                 to_charge_query = 'tenant'
             related_recordset = rec.property_id.maintenance_per_property.search(
-                [
-                    ("to_charge", "=", to_charge_query),
-                    ("property_id", "=", rec.property_id.id),
-                    '|',
-                    ("frequency", "=", rec.frequency),
-                    ("frequency", "=", "once")
-                ]
-            )
+                    [
+                        ("to_charge", "=", to_charge_query),
+                        ("property_id", "=", rec.property_id.id),
+                        '|',
+                        ("frequency", "=", rec.frequency),
+                        ("frequency", "=", "once")
+                        ]
+                    )
             for maintenance in related_recordset:
                 self.add_contract_maintenance(rec, maintenance)
 
@@ -210,20 +216,20 @@ class AccountAnalyticModified(models.Model):
                 maintenance.maintenance_requests = self.env['maintenance.request'].search([('maintenance_contract_id', '=', maintenance.id)]) 
                 for maintenance_request in maintenance.maintenance_requests:
                     vard_data={
-                        'start_date':maintenance_request.schedule_date,
-                        'amount':maintenance_request.cost,
-                        'pen_amt':maintenance_request.cost,
-                        'property_id': rec.property_id.id,
-                        'tenancy_id': rec.id,
-                        'currency_id': rec.currency_id.id or False,
-                        'rel_tenant_id': rec.tenant_id.id,									
-                        'is_service': maintenance_request.is_service,
-                        'maintenance_id': maintenance_request.id,
-                        #'notes': maintenance_request.name.name,
-                    }
+                            'start_date':maintenance_request.schedule_date,
+                            'amount':maintenance_request.cost,
+                            'pen_amt':maintenance_request.cost,
+                            'property_id': rec.property_id.id,
+                            'tenancy_id': rec.id,
+                            'currency_id': rec.currency_id.id or False,
+                            'rel_tenant_id': rec.tenant_id.id,									
+                            'is_service': maintenance_request.is_service,
+                            'maintenance_id': maintenance_request.id,
+                            #'notes': maintenance_request.name.name,
+                            }
                     rec.write({
                         'rent_schedule_ids':[(0,0,vard_data)]
-                    })
+                        })
 
 
 
@@ -232,22 +238,22 @@ class AccountAnalyticModified(models.Model):
         for rec in self:
             if not rec.mirror_contract_id:
                 new_mirror = {
-                    'name': rec.name,
-                    'code': 'LL/' + rec.code[2:],
-                    'property_id': rec.property_id.id,
-                    'property_owner_id': rec.property_id.property_owner.id,
-                    'date_start': rec.date_start,
-                    'date': rec.date,
-                    'chech_in': rec.chech_in,
-                    'chech_out': rec.chech_out,
-                    'ten_date': rec.ten_date,
-                    'frequency': rec.frequency,
-                    'is_landlord_rent': True,
-                    'tenant_tenancy_id': rec.id,
-                    'landlord_rent': rec.landlord_rent,
-                    'deposit': rec.deposit,
-                    'tipo_tarifa': rec.tipo_tarifa,
-                }
+                        'name': rec.name,
+                        'code': 'LL/' + rec.code[2:],
+                        'property_id': rec.property_id.id,
+                        'property_owner_id': rec.property_id.property_owner.id,
+                        'date_start': rec.date_start,
+                        'date': rec.date,
+                        'chech_in': rec.chech_in,
+                        'chech_out': rec.chech_out,
+                        'ten_date': rec.ten_date,
+                        'frequency': rec.frequency,
+                        'is_landlord_rent': True,
+                        'tenant_tenancy_id': rec.id,
+                        'landlord_rent': rec.landlord_rent,
+                        'deposit': rec.deposit,
+                        'tipo_tarifa': rec.tipo_tarifa,
+                        }
                 mirror_record = rec.mirror_contract_id.create([new_mirror,])
                 rec.mirror_contract_id = mirror_record[0].id
 
@@ -289,10 +295,10 @@ class AccountMoveModified(models.Model):
         res.update({
             'context': new_context,
             # 'view_id': 
-        })
+            })
         return res
 
- 
+
 class AccountPaymentModified(models.Model):
     _inherit = 'account.payment'
 

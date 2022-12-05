@@ -417,7 +417,7 @@ class Account_analytic_account_bh(models.Model):
 				new_line_values = [(0, 0, inv_line_dict)]
 				inv_values = {
 					'partner_id': payment.tenancy_id.tenant_id.parent_id.id or False,
-					'type': 'out_invoice' if  payment.maintenance_id == False or payment.maintenance_id.to_charge = 'tenant' else 'in_invoice',
+					'type': 'out_invoice' if payment.maintenance_id == False or payment.maintenance_id.to_charge == 'tenant' else 'in_invoice',
 					'property_id': payment.tenancy_id.property_id.id or False,
 					'invoice_date': datetime.now().strftime(
 						DEFAULT_SERVER_DATE_FORMAT) or False,

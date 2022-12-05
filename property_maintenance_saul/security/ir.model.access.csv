@@ -3,3 +3,4 @@ access_maintenance_names,maintenance.names,model_maintenance_names,base.group_us
 access_maintenance_contract,maintenance.contract,model_maintenance_contract,base.group_user,1,1,1,1
 access_maintenance_category,maintenance.category,model_maintenance_category,base.group_user,1,1,1,1
 access_maintenance_property,maintenance.property,model_maintenance_property,base.group_user,1,1,1,1
+access_account_asset_commission,account.asset.commission,model_account_asset_commission,base.group_user,1,1,1,1
