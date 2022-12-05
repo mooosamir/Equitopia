@@ -21,6 +21,4 @@ class Calendar_event_manager(models.Model):
 	    string='Contrato',
 	)
 
-	    
-
 

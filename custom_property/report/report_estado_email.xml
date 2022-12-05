@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+	<data>
+		<template id="custom_property_state_property_report">
+			<t t-call="web.html_container">
+				<t t-call="web.external_layout">
+					<div class="page">
+						<div class="row">
+
+							<div class="col-6">
+								<h4>General</h4>
+								<strong>Propiedad</strong>
+								<t if="doc.property_id">
+								<span t-esc="doc.property_id.name" />	
+								</t><br/>
+								<strong>Fecha</strong>
+								<t t-if="doc.fecha_report">
+									<span t-esc="context_timestamp(doc.fecha_report).strftime('%d-%m-%Y %H:%M')"/>
+								</t>
+							</div>
+     						<div class="col-6">
+     						 <h4>Gastos</h4>
+     						  	<strong>Mantenimietos:</strong>
+     						  	<t t-if="doc.mantenimientos">
+     						  		<span t-field="doc.mantenimientos" t-options="{'widget': 'monetary', 'display_currency': doc.currency_id}"/>
+     						  	</t><br/>
+							    <strong>Servicios:</strong>
+							    <t t-if="doc.servicios">
+     						  		<span t-field="doc.servicios" t-options="{'widget': 'monetary', 'display_currency': doc.currency_id}"/>
+     						  	</t><br/>
+							  	<strong>Otros gastos</strong>
+							  	<t t-if="doc.otros_gastos">
+     						  		<span t-field="doc.otros_gastos" t-options="{'widget': 'monetary', 'display_currency': doc.currency_id}"/>
+     						  	</t><br/>
+							   	<strong>HOA</strong>	
+							   	<t t-if="doc.hao">
+     						  		<span t-field="doc.hao" t-options="{'widget': 'monetary', 'display_currency': doc.currency_id}"/>
+     						  	</t>
+								<strong>Ingresos netos</strong>	
+							   	<t t-if="doc.hao">
+     						  		<span t-field="doc.ingresos_netos" t-options="{'widget': 'monetary', 'display_currency': doc.currency_id}"/>
+     						  	</t>
+							
+     						</div>
+						</div>
+						<div class="row">
+
+							<div class="col-6">
+								<h4>Renta</h4>
+								<strong>Rentas Programadas</strong>
+								<t t-if="doc.rent_cronograma">
+     						  		<span t-field="doc.rent_cronograma" t-options="{'widget': 'monetary', 'display_currency': doc.currency_id}"/>
+     						  	</t><br/>
+								<strong>Rentas Efectivas</strong>
+								<t t-if="doc.rent_efectivo">
+     						  		<span t-field="doc.rent_efectivo" t-options="{'widget': 'monetary', 'display_currency': doc.currency_id}"/>
+     						  	</t>
+							</div>
+     						<div class="col-6">
+     						 <h4>Ocupacion</h4>
+     						 <strong>Libre</strong>
+     						 <t t-if="doc.ocupacionlibre">
+     						  		<span t-esc="doc.ocupacionlibre"/>
+     						  	</t><br/>
+     						 <strong>No libre</strong>
+     						 <t t-if="doc.ocupacionnl">
+     						  		<span t-esc="doc.ocupacionnl"/>
+     						  	</t>
+     						</div>
+						</div>
+						<div class="row">
+
+							<div class="col-6">
+								<h4>Historico</h4>
+								<strong>Rentas cobradas</strong>
+								<t t-if="doc.rent_cobradas">
+     						  		<span t-field="doc.rent_cobradas" t-options="{'widget': 'monetary', 'display_currency': doc.currency_id}"/>
+     						  	</t><br/>
+								<strong>Rentas ha cobrar</strong>
+								<t t-if="doc.rent_por_cobrar">
+     						  		<span t-field="doc.rent_por_cobrar" t-options="{'widget': 'monetary', 'display_currency': doc.currency_id}"/>
+     						  	</t>
+							</div>
+     						<div class="col-6">
+     						
+     						</div>
+						</div>
+					</div>
+				</t>
+			</t>
+
+		</template>		 
+	</data>
+</odoo>
