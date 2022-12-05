@@ -8,7 +8,6 @@ import math
 from odoo.tools import DEFAULT_SERVER_DATE_FORMAT
 from dateutil.relativedelta import relativedelta
 import pytz
-import calendar
 from odoo.tools import DEFAULT_SERVER_DATETIME_FORMAT
 class Rent_type_get(models.Model):
 
@@ -62,22 +61,17 @@ class Account_payment_custom(models.Model):
 
     tipo_de_pago = fields.Selection([('r', "Renta"), ("m", "Mantenimiento"), ("s", "Servicio"), ("o", "Otros")])
 
-    calc_balance = fields.Boolean(string='Balance')
-
 class Account_asset_asset_customs(models.Model):
 
 	_inherit='account.asset.asset'
-
 
 	hora_entrada = fields.Float(string='Hora de entrada')
 
 	hora_salida = fields.Float(string='Hora de salida')
 
 	entrega_acceso_id = fields.Many2one('res.partner',string='Entrega de accesos')
-	
-	count_reg=fields.Integer(compute="_calculo_registro")
 
-	count_reg_state=fields.Integer(compute="_count_estados")
+	count_reg=fields.Integer(compute="_calculo_registro")
 
 	tarifa_de_propiedad = fields.One2many(
 	    'rental.rates',
@@ -115,14 +109,6 @@ class Account_asset_asset_customs(models.Model):
 		"""
 		for rec in self:
 			rec.count_reg=self.env['calendar.event'].search_count([('property_calendary','=',rec.id)])
-
-	def _count_estados(self):
-		"""
-		contar la cantidad de estados
-		"""
-		for rec in self:
-			rec.count_reg_state=self.env['estado.result'].search_count([('property_id','=',rec.id)])
-
 
 
 class Rental_rates(models.Model):
@@ -197,7 +183,7 @@ class Account_analytic_account_bh(models.Model):
 
 	bandera_in_realizado = fields.Boolean(string='Realizado')
 
-	rate_busy=fields.Html(
+	rate_busy=fields.Text(
 	    string='Rango ocupado',
 	)
 
@@ -272,7 +258,7 @@ class Account_analytic_account_bh(models.Model):
 			day_diff=(self.chech_out-self.chech_in).days
 			tarifa_select=self.buscar_rango(day_diff)
 			if len(tarifa_select)==0:
-				raise UserError("No se encontro una tarifa para usar")
+				raise UserError("No se encontro una tarifa para usuar")
 			d1=self.chech_in
 			#DIARIO
 			if day_diff>=1 and day_diff<=7:
@@ -562,7 +548,6 @@ class Account_analytic_account_bh(models.Model):
 	def _onchange_property_id(self):
 		rangos=self.env['calendar.event'].search([('property_calendary','=',self.property_id.id)])
 		busy_days=''
-		cale_ndar=[]
 		for item in rangos:
 			busy_days+=self.get_correct_date_show(item.start)+" > "+self.get_correct_date_show(item.stop)+"\n"
 		self.rate_busy=busy_days
@@ -579,9 +564,6 @@ class Account_analytic_account_bh(models.Model):
 				(datetime.strptime(fecha.strftime("%Y-%m-%d %H:%M:%S"), DEFAULT_SERVER_DATETIME_FORMAT)).
 				astimezone(local),"%d-%m-%Y %H:%M:%S")
 			return fecha_real
-
-
-
 
 	# @api.onchange('chech_in','chech_out')
 	# def _onchange_chechinout(self):

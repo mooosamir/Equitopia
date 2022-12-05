@@ -139,9 +139,6 @@ class Landlord_partner_property_lines(models.Model):
     line_property_id = fields.Many2one('landlord.partner',string='Propiedades')
 
 
-    
-
-
 
 
 

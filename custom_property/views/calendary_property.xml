@@ -15,13 +15,29 @@
 		</record>
 
 
-	     <record model="ir.actions.act_window" id="accion_custom_calendary_manager">
+	  <record model="ir.actions.act_window" id="accion_custom_calendary_manager">
           <field name="name">Property Manager</field>
           <field name="res_model">calendar.event</field>
           <field name="type">ir.actions.act_window</field>
           <field name="view_mode">calendar,tree,form</field>
           <field name="domain">[('property_calendary','=',active_id)]</field>
           </record>
+          <!--ESTADO DE PROPIEDAD-->
+          <record id="action_estados_resultados" model="ir.actions.act_window">
+            <field name="name">Estado</field>
+            <field name="res_model">estado.result</field>
+            <field name="view_mode">tree,form</field>
+            <field name="domain">[('property_id','=',active_id)]</field>
+         </record> 
+
+          <!--BALANCE ECONOMIC-->
+            <record id="action_balance_economic" model="ir.actions.act_window">
+                    <field name="name">Balance Economico</field>
+                    <field name="res_model">balance.economyc.report</field>
+                    <field name="view_mode">tree,pivot,form,graph</field>
+                    <field name="context">{'property_mov_id':active_id}</field>
+            </record>  
+    
 
 		<record id="property_view_calendar" model="ir.ui.view">
 		   <field name="name">property.calendar</field>
@@ -39,6 +55,28 @@
                 widget="statinfo"
                  /> 
            </button>
+          
+           <button class="oe_stat_button"
+                       icon="fa-calculator"
+                       help="Balance"
+                       type="action"
+                       name="%(action_balance_economic)d">Balance             
+           </button>
+
+           <button class="oe_stat_button"
+                       icon="fa-signal"
+                       help="Estado"
+                       type="action"
+                       name="%(action_estados_resultados)d">
+                        <field string="Estado"
+                name="count_reg_state"
+                widget="statinfo"/>            
+           </button>        
+
+           </xpath>
+
+           <xpath expr="//field[@name='tenancy_property_ids']/tree[1]/field[@name='rent_type_id']" position="replace">
+             <field name="tipo_tarifa"/>
            </xpath>
                       
            </field>
