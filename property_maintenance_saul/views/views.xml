@@ -172,5 +172,17 @@
       </field>
     </record>
 
+    <record model="ir.ui.view" id="account_payment_modified">
+      <field name="model">account.payment</field>
+      <field name="inherit_id" ref="account.view_account_payment_invoice_form" />
+      <field name="arch" type="xml">
+        <xpath expr="//field[@name='calc_balance']" position="after">
+          <field name="payment_type" invisible="0" />
+          <field name="partner_type" invisible="0" />
+          <field name="partner_id" invisible="0" />
+        </xpath>
+      </field>
+    </record>
+
   </data>
 </odoo>
