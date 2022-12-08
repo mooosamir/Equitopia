@@ -1,0 +1,6 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_property_usuers,property.usuers,model_property_usuers,,1,1,1,1
+access_rental_rates,rental.rates,model_rental_rates,,1,1,1,1
+access_balance_economyc_report,balance.economyc.report,model_balance_economyc_report,,1,1,1,1
+access_estado_result,estado.result,model_estado_result,,1,1,1,1
+access_balance_economyc_report_lines,balance.economyc.report.lines,model_balance_economyc_report_lines,,1,1,1,1
