@@ -15,6 +15,7 @@ class MaintenanceTeamModified(models.Model):
 class AccountComission(models.Model):
     _name = 'account.asset.commission'
 
+
     commission_percentage = fields.Float(string="Comisión (porcentaje)")
     commission_value = fields.Float(string="Comisión")
     property_id = fields.Many2one('account.asset.asset')
@@ -35,6 +36,8 @@ class AccountAssetModified(models.Model):
             inverse_name='property_id',
             store=True)
     commission_ids = fields.One2many('account.asset.commission', inverse_name='property_id', string='Comisiones')
+    commission_percentage = fields.Float(string="Comisión (porcentaje)")
+    commission_value = fields.Float(string="Comisión")
 
     def create_tenancy(self):
         return {
@@ -48,6 +51,8 @@ class AccountAssetModified(models.Model):
                 'context': {
                     'default_property_id': self.id,
                     'default_property_owner_id': self.property_owner.id,
+                    'default_commission_value': self.commission_value,
+                    'default_commission_percentage': self.commission_percentage,
                     }
                 }
 
@@ -134,12 +139,33 @@ class AccountAnalyticModified(models.Model):
             else:
                 rec.frequency = 'Yearly'
 
+    def _compute_rent_payment(self):
+        for rec in self:
+            if len(rec.rent_schedule_ids) > 0:
+                rec.rent_payment = rec.rent_schedule_ids[0]
+            else:
+                rec.rent_payment = False
+
+    commission_value = fields.Float(string="Comisión")
+    commission_percentage = fields.Float(string="Comisión (porcentaje)")
     maintenance_per_property = fields.One2many('maintenance.contract', inverse_name='analytic_id')
     frequency = fields.Selection([('Daily', 'Diario'), ('Weekly', 'Semanal'), ('Monthly', 'Mensual'), ('Semestral', 'Semestral'), ('Yearly', 'Anual')], compute='_compute_frequency', string="Frecuencia")
     # Mirror contract: For tenant view
     mirror_contract_id = fields.Many2one('account.analytic.account')
     # Mirror contract: For landlord view
     tenant_tenancy_id = fields.Many2one('account.analytic.account')
+    rent_payment = fields.Many2one('tenancy.rent.schedule', compute="_compute_rent_payment")
+
+    def open_payment(self):
+        return {
+            'type': 'ir.actions.act_window',
+            'view_type': 'form',
+            'view_mode': 'form',
+            'view_id': self.env.ref('account.view_move_form').id,
+            'res_model': 'tenancy.rent.schedule',
+            'res_id': self.rent_payment.id,
+            'target': 'current',
+        }
 
     def add_contract_maintenance(self, rec, maintenance):
         self.env['maintenance.contract'].create([{

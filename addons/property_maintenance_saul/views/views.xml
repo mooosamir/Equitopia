@@ -28,6 +28,10 @@
           <attribute name="invisible">1</attribute>
         </xpath>
 
+        <xpath expr="//field[@name='currency_id']" position="after">
+          <field name="commission_value" />
+          <field name="commission_percentage" />
+        </xpath>
 
         <!-- Boton de nuevo contrato -->
         <xpath expr="//button[@name='open_url']" position="after">
@@ -96,7 +100,9 @@
         <!-- Mantenimientos por propiedad -->
         <field name="rent_type_id" position="after">
           <field name="frequency" />
-          <field name="mirror_contract_id" readonly="1" context="{'form_view_ref': 'property_landlord_management.landlord_analytic_view_form_id'}" string="Contrato del propietario"/>
+          <field name="mirror_contract_id" readonly="1" context="{'form_view_ref': 'property_landlord_management.landlord_analytic_view_form_id'}" string="Contrato del propietario" />
+          <field name="commission_value" readonly="1" />
+          <field name="commission_percentage" readonly="1" />
         </field>
 
         <xpath expr="//page[@name='history']" position="before">
@@ -106,7 +112,7 @@
                 <field name="name" string="Nombre" />
                 <field name="team" string="Equipo" />
                 <field name="frequency" />
-                <field name="cost" string="Costo"/>
+                <field name="cost" string="Costo" />
                 <field name="charge" />
                 <field name="category" />
               </tree>
@@ -129,76 +135,103 @@
           </xpath>
         -->
 
-          <!-- Campos ocultos -->
-          <xpath expr="//field[@name='rent']" position="attributes">
-            <attribute name="invisible">1</attribute>
-          </xpath>
-          <xpath expr="//field[@name='date']" position="attributes">
-            <attribute name="invisible">1</attribute>
-          </xpath>
-          <xpath expr="//field[@name='date_start']" position="attributes">
-            <attribute name="invisible">1</attribute>
-          </xpath>
-          <xpath expr="//field[@name='rent_type_id']" position="attributes">
-            <attribute name="invisible">1</attribute>
-          </xpath>
+        <!-- Campos ocultos -->
+        <xpath expr="//field[@name='rent']" position="attributes">
+          <attribute name="invisible">1</attribute>
+        </xpath>
+        <xpath expr="//field[@name='date']" position="attributes">
+          <attribute name="invisible">1</attribute>
+        </xpath>
+        <xpath expr="//field[@name='date_start']" position="attributes">
+          <attribute name="invisible">1</attribute>
+        </xpath>
+        <xpath expr="//field[@name='rent_type_id']" position="attributes">
+          <attribute name="invisible">1</attribute>
+        </xpath>
 
+      </field>
+    </record>
 
-          <!-- Menus -->
-          <!--<menuitem
-            id="menu_property_admin"
-            name="Administracion"
-            parent="menu_property_main"
-          sequence="9" /> -->
+    <record model="ir.ui.view" id="account_anlytic_landlord_custom_maintenance">
+      <field name="model">account.analytic.account</field>
+      <field name="inherit_id" ref="property_landlord_management.landlord_analytic_view_form_id" />
+      <field name="arch" type="xml">
+
+        <xpath expr="//field[@name='rent_type_id']" position="attributes">
+          <attribute name="required">0</attribute>
+        </xpath>
+
+        <!-- Mantenimientos por propiedad -->
+        <field name="rent_type_id" position="after">
+          <field name="frequency" />
         </field>
-      </record>
-
-      <record model="ir.ui.view" id="account_anlytic_landlord_custom_maintenance">
-        <field name="model">account.analytic.account</field>
-        <field name="inherit_id" ref="property_landlord_management.landlord_analytic_view_form_id" />
-        <field name="arch" type="xml">
-
-          <xpath expr="//field[@name='rent_type_id']" position="attributes">
-            <attribute name="required">0</attribute>
-          </xpath>
-
-          <!-- Mantenimientos por propiedad -->
-          <field name="rent_type_id" position="after">
-            <field name="frequency" />
-          </field>
-          <field name="deposit_scheme_type" position="after">
-            <field name="tenant_tenancy_id" readonly="1" string="Contrato del inquilino" context="{'form_view_ref': 'property_management.property_analytic_view_form'}"/>
-          </field>
-
-          <xpath expr="//page[@name='history']" position="before">
-            <page name="tenant_maintenance_page" string="Mantenimientos">
-              <field name="maintenance_per_property" readonly="0">
-                <tree string="Mantenimientos">
-                  <field name="name" string="Nombre" />
-                  <field name="team" string="Equipo" />
-                  <field name="frequency" />
-                  <field name="cost" string="Costo"/>
-                  <field name="charge" />
-                  <field name="category" />
-                </tree>
-              </field>
-            </page>
-          </xpath>
-
+        <field name="deposit_scheme_type" position="after">
+          <field name="tenant_tenancy_id" readonly="1" string="Contrato del inquilino" context="{'form_view_ref': 'property_management.property_analytic_view_form'}" />
         </field>
-      </record>
 
-      <record model="ir.ui.view" id="account_payment_modified">
-        <field name="model">account.payment</field>
-        <field name="inherit_id" ref="account.view_account_payment_invoice_form" />
-        <field name="arch" type="xml">
-          <xpath expr="//field[@name='calc_balance']" position="after">
-            <field name="payment_type" invisible="0" />
-            <field name="partner_type" invisible="0" />
-            <field name="partner_id" invisible="0" />
-          </xpath>
-        </field>
-      </record>
+        <xpath expr="//page[@name='history']" position="before">
+          <page name="tenant_maintenance_page" string="Mantenimientos">
+            <field name="maintenance_per_property" readonly="0">
+              <tree string="Mantenimientos">
+                <field name="name" string="Nombre" />
+                <field name="team" string="Equipo" />
+                <field name="frequency" />
+                <field name="cost" string="Costo" />
+                <field name="charge" />
+                <field name="category" />
+              </tree>
+            </field>
+          </page>
+        </xpath>
 
-    </data>
-  </odoo>
+      </field>
+    </record>
+
+    <record model="ir.ui.view" id="account_payment_modified">
+      <field name="model">account.payment</field>
+      <field name="inherit_id" ref="account.view_account_payment_invoice_form" />
+      <field name="arch" type="xml">
+        <xpath expr="//field[@name='calc_balance']" position="after">
+          <field name="payment_type" invisible="0" />
+          <field name="partner_type" invisible="0" />
+          <field name="partner_id" invisible="0" />
+        </xpath>
+      </field>
+    </record>
+
+    <record model="ir.ui.view" id="analytic_comissions_view">
+      <field name="model">account.analytic.account</field>
+      <field name="name">analytic.comissions.custom</field>
+      <field name="arch" type="xml">
+        <tree string="Comisiones">
+          <field name="id" />
+          <field name="code"/>
+          <field name="property_id" />
+          <field name="ten_date" />
+          <field name="commission_value" />
+          <field name="commission_percentage" />
+          <field name="rent_schedule_ids" />
+          <field name="rent_payment" />
+          <button type="object" string="" name="open_payment" icon="gtk-nekt" attrs="{'invisible': [('rent_payment','=','False')]}"/>
+        </tree>
+      </field>
+    </record>
+
+    <!-- Menus -->
+    <record id="action_commission_custom" model="ir.actions.act_window">
+      <field name="name">Comisiones (por contrato)</field>
+      <field name="type">ir.actions.act_window</field>
+      <field name="res_model">account.analytic.account</field>
+      <field name="view_mode">tree</field>
+      <field name="view_id" ref="analytic_comissions_view" />
+    </record>
+
+    <menuitem 
+      id="menu_commission_custom"
+      name="Comisiones por contrato"
+      parent="property_commission.menu_commissions" 
+      action="action_commission_custom"
+      />
+   
+  </data>
+</odoo>

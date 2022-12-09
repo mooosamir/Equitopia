@@ -25,6 +25,7 @@
         'property_maintenance', 
         'property_management',
         'property_landlord_management',
+        'property_commission',
         'custom_property'
         ],
 
