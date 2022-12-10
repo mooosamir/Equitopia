@@ -2,3 +2,5 @@
 .idea/
 
 postgresql/
+
+addons/test_module
