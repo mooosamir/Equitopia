@@ -1,0 +1,105 @@
+<odoo>
+  <data>
+ <!--++++++++++++++++++++++++++++TREE++++++++++++++++++++++++++++++++++++++++-->
+  <record id="custom_property_balanace_ecomonico_tree" model="ir.ui.view">
+    <field name="name">custom_property_balance_economico.tree</field>
+    <field name="model">balance.economyc.report</field>
+    <field name="arch" type="xml">
+    	<tree>
+    		<field name="company_id"/>
+            <field name="currency_id"/>
+            <field name="property_mov_id"/>
+    	</tree>
+    </field>
+   </record>
+
+    <!--+++++++++++++++++++++++++++++++++++++++++Pivote+++++++++++++++++++++++++++-->
+  <!--    <record id="custom_property_balance_economico_pivote" model="ir.ui.view">
+    <field name="name">custom_property_balance_economico.pivote</field>
+    <field name="model">balance.economyc.report</field>
+    <field name="arch" type="xml">  
+    	<pivot string="Analisis Balance_Economico de propiedades">
+                <field name="property_mov_id" type="row"/>
+                 <field name="cant_mov" type="measure"/>
+                <field name="acum_mov" type="measure"/>
+            </pivot>
+    </field>
+   </record> -->
+
+   <!--+++++++++++++++++++++++++++++++++seach+++++++++++++++++++++++++++++++++++++++-->
+
+   <!--  <record model="ir.ui.view" id="custom_property_seach_view">
+            <field name="name">custom_property.seach_view</field>
+            <field name="model">balance.economyc.report</field>
+            <field name="arch" type="xml">
+                <search>
+                    <field name="property_mov_id"/>
+                    <field name="type_mov"/>
+                    <field name="type_payment"/>
+                  <group expand="0" string="Group By">
+                        <filter name="by_property" string="Propiedad"
+                                context="{'group_by': 'property_mov_id'}"/>
+                       <filter name="by_typymov" string="Movimiento"
+                                context="{'group_by': 'type_mov'}"/>
+                    </group>
+                </search>
+            </field>
+    </record> -->
+
+    <!--+++++++++++++++++++++++++++++++graph+++++++++++++++++++++++++++++++++++-->
+
+   <!-- <record model="ir.ui.view" id="custom_property_graph_view">
+            <field name="name">custom_property.graph_view</field>
+            <field name="model">balance.economyc.report</field>
+            <field name="arch" type="xml">
+                <graph string="Grafica de Balance " type="pie">
+                    <field name="property_mov_id" type="col"/>
+                    <field name="date_mov" type="row"/>
+                    <field name="acum_mov" string="Acumulado" type="measure"/>
+                </graph>
+            </field>
+    </record> -->
+
+    <!--+++++++++++++++++++++++++++++++++FORM+++++++++++++++++++++++++++++++++++++--> 
+    <record model="ir.ui.view" id="custom_property_from_view">
+            <field name="name">custom_property.form_view</field>
+            <field name="model">balance.economyc.report</field>
+            <field name="arch" type="xml">
+                <form>
+                        <group>
+                        <field name="company_id"/>
+                        <field name="currency_id"/>
+                        <field name="property_mov_id"/>
+                        </group>
+                          <notebook>
+                            <page string="Balance economico">
+                                <field name="balance_economico_ids">
+                                    <tree decoration-danger="type_mov=='outbound'" decoration-success="type_mov=='inbound'">
+                                        <field name="payment_mov_id" string="Ref"/>   
+                                        <field name="date_mov"/>
+                                        <field name="type_mov"/>
+                                        <field name="type_payment"/>
+                                        <field name="cant_mov" widget="monetary" options="{'currency_field': 'currency_id'}"/>
+                                        <field name="acum_mov" widget="monetary" options="{'currency_field': 'currency_id'}"/>
+                                        <field name="decription_mov"/>
+                                        <field name="payment_mov_id"/>
+                                        <field name="company_id" invisible="1"/>
+                                        <field name="currency_id" invisible="1"/>
+                                        <field name="line_invoice"/>
+                                        <field name="balance_economyc_lines_id" invisible="1"/>
+                                   </tree>
+                                   
+
+                                </field>
+                            </page>
+                        </notebook>
+                      
+                </form>
+
+                
+            </field>
+    </record>
+
+    
+  </data>
+</odoo>

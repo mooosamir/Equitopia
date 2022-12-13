@@ -1,0 +1,96 @@
+<odoo>
+	<data>
+		<!--+++++++++++++++++++++++++++++++++FORM+++++++++++++++++++++++++++++++++++++--> 
+	    <record model="ir.ui.view" id="custom_estado_resultado_from_view">
+	            <field name="name">custom_estado_resultado.form_view</field>
+	            <field name="model">estado.result</field>
+	            <field name="arch" type="xml">
+	                <form>
+	                    <sheet>
+	                    	<field name="imagen" widget="image" class="oe_avatar" options="{'size': [120, 120]}" nolabel="1"/>
+	                    	<group>
+	                    		<field name="mes_estado" nolabel="1" readonly="1" style="font-size: 16px;"/>
+	                    		<field name="mes_num" invisible="1"/>
+	                    	</group>
+	                        <group>
+	                            <group string="General">
+	                                <field name="property_id" readonly="1"/>
+	                                <field name="company_id" string="Compañia" readonly="1"/>
+	                                <field name="currency_id" string="Moneda"  invisible="1"/>
+	                                <field name="fecha_report" readonly="1"/>
+	                                <field name="manager_id" readonly="1"/>
+	                                <field name="owner_id"/>
+	                                <field name="estado"/>
+	                                <field name="foreport"/>
+	                            </group>
+	                            <group string="Gastos">
+		                            <field name="mantenimientos"  widget="monetary" options="{'currency_field': 'currency_id'}" readonly="1"/>
+		                            <field name="servicios"  widget="monetary" options="{'currency_field': 'currency_id'}" readonly="1"/>
+		                            <field name="otros_gastos"  widget="monetary" options="{'currency_field': 'currency_id'}" readonly="1"/>   
+		                            <field name="hao"  widget="monetary" options="{'currency_field': 'currency_id'}" readonly="1"/>       
+									 <field name="ingresos_netos" widget="monetary" options="{'currency_field': 'currency_id'}" readonly="1"/> 									
+							
+	                            </group>
+	                        </group>
+	                         <group>
+	                         	 <group string="Rentas">
+	                                 <field name="rent_cronograma"  widget="monetary" options="{'currency_field': 'currency_id'}" readonly="1"/>
+	                                 <field name="rent_efectivo"  widget="monetary" options="{'currency_field': 'currency_id'}" readonly="1"/>	
+	                              </group>
+	                              <group string="Ocupacion">
+
+	                               <label for="dias_libres"/>
+					                 <div>
+					                   <field name="dias_libres"  class="oe_inline" readonly="1"/> <span class="ml8">Dias </span>
+					                   <field name="porcent_libre" class="oe_inline" readonly="1"/>
+					                   <span class="ml8">%</span>
+					                 </div>
+					                 <label for="dias_ocupados"/>
+					                 <div>
+					                   <field name="dias_ocupados" class="oe_inline" readonly="1"/> <span class="ml8">Dias </span>
+					                   <field name="procetaje_ocupado" class="oe_inline" readonly="1"/>
+					                   <span class="ml8">%</span>
+					                </div>  
+
+	                        	</group>
+	                        	<group string="Historico">
+	                        	<field name="rent_cobradas" widget="monetary" options="{'currency_field': 'currency_id'}" readonly="1"/>
+
+	                        	<field name="rent_por_cobrar" widget="monetary" options="{'currency_field': 'currency_id'}" readonly="1"/>
+                        	     <!-- 
+                        	     <field name="rent_cobradas" widget="gauge" options="{'max_field': 'target_goal', 'label_field': 'definition_suffix', 'style': 'width:160px; height: 120px;'}"/>
+
+                        	     <field name="rent_por_cobrar" widget="gauge" options="{'max_field': 'target_goal', 'label_field': 'definition_suffix', 'style': 'width:160px; height: 120px;'}"/>	 -->
+	                            
+	                            </group>   
+	                         </group>
+	                        
+	                        
+	                    </sheet>
+	                </form>
+	                
+	            </field>
+	    </record>
+
+
+	 <!--++++++++++++++++++++++++++++TREE++++++++++++++++++++++++++++++++++++++++-->
+	  <record id="custom_estado_resultado_tree" model="ir.ui.view">
+	    <field name="name">custom_estado_resultado.tree</field>
+	    <field name="model">estado.result</field>
+	    <field name="arch" type="xml">
+	    	<tree>
+	    		<field name="fecha_report"/>
+	    		<field name="mes_estado"/>
+	    		<field name="property_id"/>
+	    		<field name="enviado"/>	    	
+	    		<field name="foreport"/>	
+
+	    	</tree>
+	    </field>
+	   </record>
+
+
+	
+	
+	</data>
+</odoo>
