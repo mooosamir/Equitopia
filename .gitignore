@@ -4,3 +4,4 @@
 postgresql/
 
 addons/test_module
+etc/odoo-server.log
