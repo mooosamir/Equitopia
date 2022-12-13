@@ -108,7 +108,7 @@
         <xpath expr="//page[@name='history']" position="before">
           <page name="tenant_maintenance_page" string="Mantenimientos">
             <field name="maintenance_per_property" readonly="0">
-              <tree string="Mantenimientos">
+              <tree string="Mantenimientos y servicios">
                 <field name="name" string="Nombre" />
                 <field name="team" string="Equipo" />
                 <field name="frequency" />
