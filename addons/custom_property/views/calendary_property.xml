@@ -60,7 +60,11 @@
                        icon="fa-calculator"
                        help="Balance"
                        type="action"
-                       name="%(action_balance_economic)d">Balance             
+                       name="%(action_balance_economic)d">  
+                       <field string="Balance"
+                name="count_balances"
+                widget="statinfo"/>    
+
            </button>
 
            <button class="oe_stat_button"

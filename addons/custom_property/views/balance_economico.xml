@@ -6,12 +6,25 @@
     <field name="model">balance.economyc.report</field>
     <field name="arch" type="xml">
     	<tree>
-            <field name="company_id"/>
+    		<field name="company_id"/>
             <field name="currency_id"/>
             <field name="property_mov_id"/>
     	</tree>
     </field>
    </record>
+
+    <!--+++++++++++++++++++++++++++++++++++++++++Pivote+++++++++++++++++++++++++++-->
+  <!--    <record id="custom_property_balance_economico_pivote" model="ir.ui.view">
+    <field name="name">custom_property_balance_economico.pivote</field>
+    <field name="model">balance.economyc.report</field>
+    <field name="arch" type="xml">  
+    	<pivot string="Analisis Balance_Economico de propiedades">
+                <field name="property_mov_id" type="row"/>
+                 <field name="cant_mov" type="measure"/>
+                <field name="acum_mov" type="measure"/>
+            </pivot>
+    </field>
+   </record> -->
 
    <!--+++++++++++++++++++++++++++++++++seach+++++++++++++++++++++++++++++++++++++++-->
 
@@ -33,13 +46,26 @@
             </field>
     </record> -->
 
+    <!--+++++++++++++++++++++++++++++++graph+++++++++++++++++++++++++++++++++++-->
+
+   <!-- <record model="ir.ui.view" id="custom_property_graph_view">
+            <field name="name">custom_property.graph_view</field>
+            <field name="model">balance.economyc.report</field>
+            <field name="arch" type="xml">
+                <graph string="Grafica de Balance " type="pie">
+                    <field name="property_mov_id" type="col"/>
+                    <field name="date_mov" type="row"/>
+                    <field name="acum_mov" string="Acumulado" type="measure"/>
+                </graph>
+            </field>
+    </record> -->
+
     <!--+++++++++++++++++++++++++++++++++FORM+++++++++++++++++++++++++++++++++++++--> 
     <record model="ir.ui.view" id="custom_property_from_view">
             <field name="name">custom_property.form_view</field>
             <field name="model">balance.economyc.report</field>
             <field name="arch" type="xml">
                 <form>
-                    <!-- <sheet> -->
                         <group>
                         <field name="company_id"/>
                         <field name="currency_id"/>
@@ -67,10 +93,9 @@
                                 </field>
                             </page>
                         </notebook>
-                        
-
-                    <!-- </sheet> -->
+                      
                 </form>
+
                 
             </field>
     </record>

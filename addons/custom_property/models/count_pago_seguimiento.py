@@ -10,6 +10,9 @@ from dateutil.relativedelta import relativedelta
 import pytz
 import calendar
 from odoo.tools import DEFAULT_SERVER_DATETIME_FORMAT
+import json
+from lxml import etree
+import calendar
 class Rent_type_get(models.Model):
 
 	_inherit="rent.type"
@@ -79,6 +82,8 @@ class Account_asset_asset_customs(models.Model):
 
 	count_reg_state=fields.Integer(compute="_count_estados")
 
+	count_balances=fields.Integer(compute="_contarbalances")
+
 	tarifa_de_propiedad = fields.One2many(
 	    'rental.rates',
 	    'propiedad_id',
@@ -122,6 +127,13 @@ class Account_asset_asset_customs(models.Model):
 		"""
 		for rec in self:
 			rec.count_reg_state=self.env['estado.result'].search_count([('property_id','=',rec.id)])
+
+
+
+	def _contarbalances(self):
+		for rec in self:
+			rec.count_balances=self.env['balance.economyc.report'].search_count([
+				('property_mov_id','=',rec.id)])
 
 
 
@@ -197,9 +209,40 @@ class Account_analytic_account_bh(models.Model):
 
 	bandera_in_realizado = fields.Boolean(string='Realizado')
 
-	rate_busy=fields.Html(
+	rate_busy=fields.Text(
 	    string='Rango ocupado',
 	)
+
+	suggested_month=fields.Date(
+	    string='Mes',
+	    default=lambda self: fields.datetime.now(),
+	)
+
+
+
+	# @api.model
+	# def fields_view_get(self, view_id=None, view_type='form', toolbar=False, submenu=False):
+	# 	res = super(Account_analytic_account_bh, self).fields_view_get(view_id=view_id, 
+	# 		view_type=view_type, 
+	# 		toolbar=toolbar, 
+	# 		submenu=submenu)
+	# 	if view_type=='form':
+	# 		doc=etree.XML(res['arch'])
+	# 		name_check_in=doc.xpath("//field[@name='chech_in']")	
+			
+	# 		disable=[0,5,6]
+			
+	# 		date_invalidad='{"datepicker": {"daysOfWeekDisabled": '+disable+'}}'
+
+	# 		raise UserError(date_invalidad)
+
+	# 		#if name_check_in:
+	# 		#	name_check_in[0].set("options",'{"datepicker": {"daysOfWeekDisabled": '%date_invalidad%'}}')
+	# 	#		name_check_in[0].set('options', "{'datepicker': {'daysOfWeekDisabled': '[0,5,6]'}}" % fields.Date.today().strftime(DEFAULT_SERVER_DATE_FORMAT))
+
+	# 		res['arch'] = etree.tostring(doc,encoding='unicode')
+	# 	return res
+
 
 
 	def buscar_rango(self,days):
@@ -413,11 +456,10 @@ class Account_analytic_account_bh(models.Model):
 					'is_service': payment.is_service,
 					'maintenance_id': payment.maintenance_id.id,
 				})
-				#raise UserError(str(inv_line_dict))
 				new_line_values = [(0, 0, inv_line_dict)]
 				inv_values = {
 					'partner_id': payment.tenancy_id.tenant_id.parent_id.id or False,
-					'type': 'out_invoice' if payment.maintenance_id == False or payment.maintenance_id.to_charge == 'tenant' else 'in_invoice',
+					'type': 'out_invoice',
 					'property_id': payment.tenancy_id.property_id.id or False,
 					'invoice_date': datetime.now().strftime(
 						DEFAULT_SERVER_DATE_FORMAT) or False,
@@ -558,14 +600,34 @@ class Account_analytic_account_bh(models.Model):
 			raise UserError(_("El rengo de fecha de reserva ya esta ocupado, Favor de usar otra"))
 
 
-	@api.onchange('property_id')
+	@api.onchange('suggested_month','property_id')
 	def _onchange_property_id(self):
-		rangos=self.env['calendar.event'].search([('property_calendary','=',self.property_id.id)])
-		busy_days=''
-		cale_ndar=[]
-		for item in rangos:
-			busy_days+=self.get_correct_date_show(item.start)+" > "+self.get_correct_date_show(item.stop)+"\n"
-		self.rate_busy=busy_days
+
+		date_suggested=self.suggested_month
+		total_dias=calendar.monthrange(int(date_suggested.year),date_suggested.month)[1]
+		start_filter=date(date_suggested.year,date_suggested.month,1)
+		stop_filter=date(date_suggested.year,date_suggested.month,total_dias)
+
+		rangos=self.env['calendar.event'].search([('property_calendary','=',self.property_id.id),
+			('start','>=',start_filter),('stop','<=',stop_filter)])
+
+		month_all=[x for x in range(1,total_dias+1)]	
+		list_free_days=[]
+		if rangos:
+			busy_days=[]
+			for item in rangos:
+				busy_days=[x for x in range(item.start.day,item.stop.day+1)]
+			day_free=set(month_all).difference(set(busy_days))
+			list_free_days.append(day_free)
+		html=''
+		cont=1
+		for lisx in list_free_days:
+			for x in lisx:
+				html+=' Dia: '+str(x)
+				if cont%7==0:
+					html+="\n"
+				cont+=1
+		self.rate_busy=html
 
 	def get_correct_date_show(self,fecha):
 		"""

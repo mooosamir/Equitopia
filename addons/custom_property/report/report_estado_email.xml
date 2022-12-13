@@ -7,7 +7,7 @@
 					<div class="page">
 						<div class="row">
 
-							<div class="col-6">
+							<div class="col-4">
 								<h4>General</h4>
 								<strong>Propiedad</strong>
 								<t if="doc.property_id">
@@ -17,6 +17,9 @@
 								<t t-if="doc.fecha_report">
 									<span t-esc="context_timestamp(doc.fecha_report).strftime('%d-%m-%Y %H:%M')"/>
 								</t>
+							</div>
+							<div class="col-2">								
+								<img t-attf-src="data:image/*;base64,{{doc.imagen}}" style="max-height: 80px;max-width: 145px;padding:2px;" align="center"/>
 							</div>
      						<div class="col-6">
      						 <h4>Gastos</h4>
@@ -59,12 +62,12 @@
      						<div class="col-6">
      						 <h4>Ocupacion</h4>
      						 <strong>Libre</strong>
-     						 <t t-if="doc.ocupacionlibre">
-     						  		<span t-esc="doc.ocupacionlibre"/>
+     						 <t t-if="doc.dias_libres">
+     						  		<span t-esc="doc.dias_libres"/>
      						  	</t><br/>
      						 <strong>No libre</strong>
-     						 <t t-if="doc.ocupacionnl">
-     						  		<span t-esc="doc.ocupacionnl"/>
+     						 <t t-if="doc.dias_ocupados">
+     						  		<span t-esc="doc.dias_ocupados"/>
      						  	</t>
      						</div>
 						</div>

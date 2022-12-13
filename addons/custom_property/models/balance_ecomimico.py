@@ -6,7 +6,7 @@ from odoo.exceptions import UserError
 #cuando son pago o salida de dinera hay quecambiar el tipo de fectura
 #que en ves de que creen unfactura de cliente denbe crearuna factruade proveeodor
 
-class Balance_economico_lines(models.Model):
+class Balance_ecomonico_line(models.Model):
 
 	_name="balance.economyc.report"
 
@@ -34,12 +34,12 @@ class Balance_economico_lines(models.Model):
         string='Currency',
         required=True)
 
+
 	def actualizar_balecon(self):
 		propiedades=self.env['account.asset.asset'].search([])
 		for pd in propiedades:
 			data=self.env['account.payment'].search([('property_id','=',pd.id),
 			('calc_balance','=',False),('state','<>','draft')],order='payment_date asc')
-			raise UserError(str(data))
 			data_balance=[]	
 
 			array_data=[]
@@ -76,8 +76,8 @@ class Balance_economico_lines(models.Model):
 				item.calc_balance=True
 
 			#crear nuevo balanc
-			
-			self.env['balance.economyc.report'].create({
+			if data_balance:
+				self.env['balance.economyc.report'].create({
 				'balance_economico_ids':data_balance,
 				'property_mov_id':pd.id,
 				})
@@ -86,11 +86,12 @@ class Balance_economico_lines(models.Model):
 
 
 
-class Balance_ecomonico(models.Model):	
+class Balance_ecomonico(models.Model):
 
 	_name="balance.economyc.report.lines"
 
-	
+	_rec_name='company_id'
+
 	##id relaccion
 	property_mov_id = fields.Many2one(
 	    'account.asset.asset',
@@ -139,5 +140,3 @@ class Balance_ecomonico(models.Model):
 	    'balance.economyc.report',
 	    string='Balance economico lines',
 	)
-
-

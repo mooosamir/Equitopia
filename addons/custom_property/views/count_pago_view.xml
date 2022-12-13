@@ -37,7 +37,7 @@
     <field name="inherit_id" ref="om_account_asset.view_account_asset_asset_form"/>
     <field name="arch" type="xml">  
        <xpath expr="//field[@name='active']" position="after">
-           <label for="hora_entrada"/>
+                <label for="hora_entrada"/>
                  <div>
                    <field name="hora_entrada" widget="float_time" class="oe_inline"/> <span class="ml8">horas</span>
                  </div>
@@ -136,8 +136,7 @@
         <xpath expr="//group/group[3]" position="after">
                 <group colspan="4">
                    <group>
-                      <field name="chech_in" required="1" widget="daterange" 
-                        options="{'related_end_date': 'chech_out'}"/>
+                      <field name="chech_in" required="1"/>
                       <label for="bandera_in_realizado"/>
                       <div>
                       <field name="bandera_in_realizado" class="oe_inline"/>
@@ -145,8 +144,7 @@
                       </div>                  
                    </group>
                    <group>
-                        <field name="chech_out" required="1" widget="daterange" 
-                            options="{'related_start_date': 'chech_in'}"/> 
+                        <field name="chech_out" required="1"/> 
                         <label for="bandera_out_realizado"/>
                         <div>
                          <field name="bandera_out_realizado" class="oe_inline"/>
@@ -154,8 +152,10 @@
                        </div>
                        
                    </group>
-                    <group string="Fechas ocupadas">
-                         <field name="rate_busy" nolabel="1" readonly="1"/>
+                    <group string="Control de fechas">
+                          <label for="suggested_month"/>
+                       <field name="suggested_month" nolabel="1"/>                     
+                         <field name="rate_busy"  string="Dias sugeridos" readonly="1"/>
                     </group>
 
                 </group>
