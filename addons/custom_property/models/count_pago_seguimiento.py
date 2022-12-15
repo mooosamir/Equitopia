@@ -90,6 +90,8 @@ class Account_asset_asset_customs(models.Model):
 	    string='Tarifa de propiedad',
 	)
 
+	send_state_result = fields.Boolean(string='Enviar estado de resultados',default=True)
+
 	@api.constrains('tarifa_de_propiedad')
 	def _exite_rental_rates(self):
 		for rec in self:
@@ -218,32 +220,13 @@ class Account_analytic_account_bh(models.Model):
 	    default=lambda self: fields.datetime.now(),
 	)
 
+	other_line_product_ids = fields.One2many(
+	    'others.payment',
+	    'other_product_id',
+	    string='Otros gastos',
+	)
 
-
-	# @api.model
-	# def fields_view_get(self, view_id=None, view_type='form', toolbar=False, submenu=False):
-	# 	res = super(Account_analytic_account_bh, self).fields_view_get(view_id=view_id, 
-	# 		view_type=view_type, 
-	# 		toolbar=toolbar, 
-	# 		submenu=submenu)
-	# 	if view_type=='form':
-	# 		doc=etree.XML(res['arch'])
-	# 		name_check_in=doc.xpath("//field[@name='chech_in']")	
-			
-	# 		disable=[0,5,6]
-			
-	# 		date_invalidad='{"datepicker": {"daysOfWeekDisabled": '+disable+'}}'
-
-	# 		raise UserError(date_invalidad)
-
-	# 		#if name_check_in:
-	# 		#	name_check_in[0].set("options",'{"datepicker": {"daysOfWeekDisabled": '%date_invalidad%'}}')
-	# 	#		name_check_in[0].set('options', "{'datepicker': {'daysOfWeekDisabled': '[0,5,6]'}}" % fields.Date.today().strftime(DEFAULT_SERVER_DATE_FORMAT))
-
-	# 		res['arch'] = etree.tostring(doc,encoding='unicode')
-	# 	return res
-
-
+	
 
 	def buscar_rango(self,days):
 		""""

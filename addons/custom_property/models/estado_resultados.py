@@ -72,8 +72,8 @@ class Estado_resultados(models.Model):
 	otros_gastos = fields.Float(
 	    string='Otros Gastos',
 	)
-	hao = fields.Float(
-	    string='HAO',
+	comisiones = fields.Float(
+	    string='Comisiones',
 	)
 	#datos historicos
 
@@ -124,7 +124,11 @@ class Estado_resultados(models.Model):
 	    string='Website',
 	)
 
-	
+	totalgastos_full = fields.Float(
+	    string='Totalgastos',
+	)
+
+
 
 	def action_state_property_unic_send(self):
 		"""enviar por correo de forma unica ya generado el reporte"""
@@ -194,6 +198,19 @@ class Estado_resultados(models.Model):
 			porcent_libre=100-procetaje_ocupado
 			otros_gastos=0
 
+			dict_state={
+			'new_draft':'Reserva Abierta',
+			'draft':'Disponible',
+			'book':'Reservados',
+			'normal':'En Arrendamiento',
+			'close':'Ventas',
+			'sold':'Vendido',
+			'open':'Correr',
+			'cancel':'Cancelar',
+			}
+
+			totalgastos=mantenimientos+servicios+otros_gastos
+
 			data_save={
 			     'property_id':pd.id, 
 				 'fecha_report':fecha_actual,
@@ -210,13 +227,16 @@ class Estado_resultados(models.Model):
 				 'procetaje_ocupado':procetaje_ocupado,
 				 'dias_libres':dias_libres,
 				 'porcent_libre':porcent_libre,
-				 'ingresos_netos':rent_efectivo-(servicios+mantenimientos+otros_gastos),
+				 'ingresos_netos':rent_efectivo-(totalgastos),
 				 'mes_estado':self.mes_find(fecha_actual.month),
 				 'mes_num':fecha_actual.month,
-				 'estado':pd.state,
+				 'estado':dict_state[pd.state],
 				 'foreport':True,
+				 'totalgastos_full':totalgastos,
 				}
 			linea_values=self.create(data_save)
-			self.action_state_property_send(linea_values)
+			#validar el envio de correo
+			if pd.send_state_result:
+				self.action_state_property_send(linea_values)
 		
 #si en  dado caso se el reporte de hace cada dia 1 de mes entonce hay que restarle uno al mes

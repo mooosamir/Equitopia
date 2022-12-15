@@ -35,12 +35,12 @@
 							  	<t t-if="doc.otros_gastos">
      						  		<span t-field="doc.otros_gastos" t-options="{'widget': 'monetary', 'display_currency': doc.currency_id}"/>
      						  	</t><br/>
-							   	<strong>HOA</strong>	
-							   	<t t-if="doc.hao">
-     						  		<span t-field="doc.hao" t-options="{'widget': 'monetary', 'display_currency': doc.currency_id}"/>
+							   	<strong>Comisiones</strong>	
+							   	<t t-if="doc.comisiones">
+     						  		<span t-field="doc.comisiones" t-options="{'widget': 'monetary', 'display_currency': doc.currency_id}"/>
      						  	</t>
 								<strong>Ingresos netos</strong>	
-							   	<t t-if="doc.hao">
+							   	<t t-if="doc.ingresos_netos">
      						  		<span t-field="doc.ingresos_netos" t-options="{'widget': 'monetary', 'display_currency': doc.currency_id}"/>
      						  	</t>
 							

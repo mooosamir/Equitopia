@@ -9,7 +9,19 @@
      <field name="numbercall">-1</field> 
      <field name="model_id" ref='model_balance_economyc_report'/> 
      <field name="code">
-       model.actualizar_balecon()
+       model.create_update_balecon()
+     </field>
+   </record>
+
+   <record id="update_bal_economiy_mensual" model="ir.cron">
+     <field name="name">Actualizar balances economico mensul</field>
+     <field name="interval_number">1</field>     
+     <field name="interval_type">months</field>     
+     <!-- <field name="nextcall" >2022-12-01 23:55:00</field> -->
+     <field name="numbercall">-1</field> 
+     <field name="model_id" ref='model_balance_economyc_report'/> 
+     <field name="code">
+       model.create_update_balecon()
      </field>
    </record>
 

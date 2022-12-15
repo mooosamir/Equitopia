@@ -26,7 +26,7 @@
           <record id="action_estados_resultados" model="ir.actions.act_window">
             <field name="name">Estado</field>
             <field name="res_model">estado.result</field>
-            <field name="view_mode">tree,form</field>
+            <field name="view_mode">tree,form,pivot,graph</field>
             <field name="domain">[('property_id','=',active_id)]</field>
          </record> 
 

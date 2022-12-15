@@ -6,6 +6,8 @@
     <field name="model">balance.economyc.report</field>
     <field name="arch" type="xml">
     	<tree>
+            <field name="fecha"/>
+            <field name="mes"/>            
     		<field name="company_id"/>
             <field name="currency_id"/>
             <field name="property_mov_id"/>
@@ -67,9 +69,15 @@
             <field name="arch" type="xml">
                 <form>
                         <group>
-                        <field name="company_id"/>
-                        <field name="currency_id"/>
                         <field name="property_mov_id"/>
+                        <field name="fecha"/>
+                        <field name="mes"/>    
+                        <field name="mes_num" invisible="1"/>    
+                        </group>
+
+                        <group>
+                        <field name="company_id"/>
+                        <field name="currency_id"/>                        
                         </group>
                           <notebook>
                             <page string="Balance economico">
