@@ -102,7 +102,9 @@
                     <field name="cost"/>
                     <field name="company_id" invisible="1"/>
                     <field name="currency_id" invisible="1"/>
+                    <field name="inv_id" readonly="1"/>
                     <field name="other_product_id" invisible="1"/>
+                    <button type="object" name="button_open_other_invoice" class="fa fa-arrow-circle-o-right" attrs="{'invisible': [('inv_id','=',False)]}" />
                 </tree>
                 <form>
                     <sheet>
@@ -202,6 +204,7 @@
     <field name="arch" type="xml">  
     	 <xpath expr="//field[@name='company_id']" position="after">
            <field name="numero_pagos" readonly="1"/>
+           <field name="gastos_extra" readonly="1"/>
          </xpath>
        <xpath expr="//field[@name='price_subtotal']" position="after">
           <field name="is_service" />
@@ -209,6 +212,7 @@
        </xpath>
     </field>
    </record>
+
 
    <record id="custom_property_account_payment_form" model="ir.ui.view">
      <field name="name">custom_property_account_payment_form.inherit</field>

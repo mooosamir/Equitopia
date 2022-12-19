@@ -312,15 +312,17 @@ class AccountMoveModified(models.Model):
         new_context = res['context'].copy()
 
         payment = self.invoice_line_ids[0]
+        payment_type = 'r'
         if payment.is_service:
-            new_context.update({'default_tipo_de_pago': 's'})
+            payment_type = 's'
         elif not str(payment.maintenance_id) == 'maintenance.request()': 
-            new_context.update({'default_tipo_de_pago': 'm'})
-        else:
-            new_context.update({'default_tipo_de_pago': 'r'})
+            payment_type = 'm'
+        elif self.gastos_extra:
+            payment_type = 'o'
+        
+        new_context.update({'default_tipo_de_pago': payment_type})
         res.update({
             'context': new_context,
-            # 'view_id': 
             })
         return res
 
