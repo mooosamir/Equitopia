@@ -88,6 +88,7 @@ class Estado_resultados(models.Model):
 	#rango de filtros
 	fecha_report = fields.Datetime(
 	    string='Fecha de reporte',
+	    default=lambda self: fields.datetime.now(),
 	)
 
 	enviado = fields.Selection([
@@ -128,6 +129,39 @@ class Estado_resultados(models.Model):
 	    string='Totalgastos',
 	)
 
+	preview = fields.Boolean(
+	    string='Previesta',
+	)
+
+	data_graph=fields.Char(
+	    string='Data',
+	)
+
+
+    #Al seleccionar una propiedad llama a la funcion o accion para cargar los respectivos datos 
+	@api.onchange('property_id')
+	def _onchange_property_id(self):
+		fecha_actual=datetime.now()
+		dict_state={
+			'new_draft':'Reserva Abierta',
+			'draft':'Disponible',
+			'book':'Reservados',
+			'normal':'En Arrendamiento',
+			'close':'Ventas',
+			'sold':'Vendido',
+			'open':'Correr',
+			'cancel':'Cancelar',
+			}
+		self.mes_estado=self.mes_find(fecha_actual.month)
+		self.mes_num=fecha_actual.month
+		if self.property_id:
+			self.imagen=self.property_id.image
+			self.manager_id=self.property_id.property_manager.id
+			self.owner_id=self.property_id.property_owner.id
+			self.estado=dict_state[self.property_id.state]
+			self.calc_property_id()
+
+
 
 
 	def action_state_property_unic_send(self):
@@ -140,7 +174,8 @@ class Estado_resultados(models.Model):
 		self.env['mail.template'].browse(template_id).send_mail(self.id,force_send=True)
 		self.enviado='Reenviado'
 
-		
+	
+
 	
 	def action_state_property_send(self,linea_values):
 		"""
@@ -156,17 +191,25 @@ class Estado_resultados(models.Model):
 		vec=['','ENERO','FEBRERO','MARZO','ABRIL','MAYO','JUNIO','JULIO','AGOSTO','SEPTIEMBRE','OCTUBRE','NOVIEMBRE','DICIEMBRE']
 		return vec[mes]				
 
-	def calc_property_id(self):
-		propiedades=self.env['account.asset.asset'].search([])
+	def calc_property_id(self):		
+		if self.property_id:
+			#si no entonces toma solo el de la consulta como resultado solo una propiedad
+			propiedades=self.env['account.asset.asset'].search([('id','=',self.property_id.id)])
+		else:
+			#si el campo de propiedad esta vacio como resultado todas las propiedades
+			propiedades=self.env['account.asset.asset'].search([])		
+
+		
 		fecha_actual=datetime.now()
 		days_max=calendar.monthrange(int(fecha_actual.year),int(fecha_actual.month))
 		date_start=date(int(fecha_actual.year),int(fecha_actual.month),1)
 		date_stop=date(int(fecha_actual.year),int(fecha_actual.month),int(days_max[1]))		
-		datfor=self.env['estado.result'].search([('foreport','=',True),('mes_num','=',int(fecha_actual.month))])
-		for item in datfor:
+		datfor=self.env['estado.result']
+		for item in datfor.search([('foreport','=',True),('mes_num','=',int(fecha_actual.month))]):
 			item.foreport=False		
 		for pd in propiedades:
 			pagos=self.env['account.payment']
+			
 			#rentas
 			rent_cobradas=sum(pagos.search([('property_id','=',pd.id),('tipo_de_pago','=','r')]).mapped('amount'))
 
@@ -196,7 +239,8 @@ class Estado_resultados(models.Model):
 			procetaje_ocupado=(ocupados*100)/int(days_max[1])
 			dias_libres=int(days_max[1])-ocupados
 			porcent_libre=100-procetaje_ocupado
-			otros_gastos=0
+			otros_gastos=sum(pagos.search([('property_id','=',pd.id),('tipo_de_pago','=','o'),
+			  	('payment_date','>=',date_start),('payment_date','<=',date_stop)]).mapped('amount'))
 
 			dict_state={
 			'new_draft':'Reserva Abierta',
@@ -209,9 +253,10 @@ class Estado_resultados(models.Model):
 			'cancel':'Cancelar',
 			}
 
-			totalgastos=mantenimientos+servicios+otros_gastos
+			totalgastos=mantenimientos+servicios+otros_gastos		
 
-			data_save={
+			if len(propiedades)>1:
+				data_save={
 			     'property_id':pd.id, 
 				 'fecha_report':fecha_actual,
 				 'manager_id':pd.property_manager.id,
@@ -233,10 +278,57 @@ class Estado_resultados(models.Model):
 				 'estado':dict_state[pd.state],
 				 'foreport':True,
 				 'totalgastos_full':totalgastos,
+				 'preview':True,
 				}
-			linea_values=self.create(data_save)
-			#validar el envio de correo
-			if pd.send_state_result:
-				self.action_state_property_send(linea_values)
+				estados_lista=datfor.search([('property_id','=',pd.id)])
+				if len(estados_lista)>=1:
+					estados_lista.update(data_save)
+					if pd.send_state_result:
+						self.action_state_property_send(estados_lista)
+				else:
+					linea_values=self.create(data_save)
+					if pd.send_state_result:
+						self.action_state_property_send(linea_values)
+
+			else:
+				self.rent_cobradas=rent_cobradas
+				self.rent_cronograma=rent_cronograma
+				self.rent_por_cobrar=rent_por_cobrar
+				self.rent_efectivo=rent_efectivo
+				self.servicios=servicios
+				self.mantenimientos=mantenimientos
+				self.dias_ocupados=dias_ocupados
+				self.procetaje_ocupado=procetaje_ocupado
+				self.dias_libres=dias_libres
+				self.porcent_libre=porcent_libre
+				self.ingresos_netos=rent_efectivo-(totalgastos)
+				self.foreport=True
+				self.totalgastos_full=totalgastos
+				#self.preview=False
+
+
+			#cargar informacion para la graficar
+
+
+			graphmonth=self.env['graph.state.result'].search([('mes_cargado','=',str(fecha_actual.month))])
+		
+			if len(graphmonth):
+				graphmonth.update({
+					'ingreso_neto':rent_efectivo-(totalgastos),
+					'total_gastos':totalgastos,
+					'rentas_efectivas':rent_efectivo,
+					'fecha_report':fecha_actual,
+					'mes_cargado':fecha_actual.month
+					})
+			else:
+				self.env['graph.state.result'].create({
+					'property_id':pd.id,
+					'ingreso_neto':rent_efectivo-(totalgastos),
+					'total_gastos':totalgastos,
+					'rentas_efectivas':rent_efectivo,
+					'fecha_report':fecha_actual,
+					'mes_cargado':fecha_actual.month
+					})
+
 		
 #si en  dado caso se el reporte de hace cada dia 1 de mes entonce hay que restarle uno al mes

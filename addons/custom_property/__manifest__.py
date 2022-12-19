@@ -24,6 +24,7 @@
        'views/calendary_property.xml',
        'views/balance_economico.xml',
        'views/estado_resultado.xml',
+       'views/graph_view_state.xml',
        'report/report_contrator_email.xml',
        'report/menu_report_contraro.xml',
        'report/report_invoice_pago.xml',

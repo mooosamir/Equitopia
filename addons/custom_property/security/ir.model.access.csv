@@ -5,3 +5,4 @@ access_balance_economyc_report,balance.economyc.report,model_balance_economyc_re
 access_estado_result,estado.result,model_estado_result,,1,1,1,1
 access_balance_economyc_report_lines,balance.economyc.report.lines,model_balance_economyc_report_lines,,1,1,1,1
 access_others_payment,others.payment,model_others_payment,,1,1,1,1
+access_graph_state_result,graph.state.result,model_graph_state_result,,1,1,1,1
