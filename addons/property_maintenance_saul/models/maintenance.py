@@ -100,8 +100,6 @@ class AccountAnalyticModified(models.Model):
             else:
                 rec.rent_payment = False
 
-    commission_value = fields.Float(string="Comisión")
-    commission_percentage = fields.Float(string="Comisión (porcentaje)")
     maintenance_per_property = fields.One2many('maintenance.contract', inverse_name='analytic_id')
     frequency = fields.Selection([('Daily', 'Diario'), ('Weekly', 'Semanal'), ('Monthly', 'Mensual'), ('Semestral', 'Semestral'), ('Yearly', 'Anual')], compute='_compute_frequency', string="Frecuencia")
     # Mirror contract: For tenant view
@@ -109,17 +107,6 @@ class AccountAnalyticModified(models.Model):
     # Mirror contract: For landlord view
     tenant_tenancy_id = fields.Many2one('account.analytic.account')
     rent_payment = fields.Many2one('tenancy.rent.schedule', compute="_compute_rent_payment")
-
-    def open_payment(self):
-        return {
-                'type': 'ir.actions.act_window',
-                'view_type': 'form',
-                'view_mode': 'form',
-                'view_id': self.env.ref('account.view_move_form').id,
-                'res_model': 'tenancy.rent.schedule',
-                'res_id': self.rent_payment.id,
-                'target': 'current',
-                }
 
     def add_contract_maintenance(self, rec, maintenance):
         self.env['maintenance.contract'].create([{

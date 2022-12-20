@@ -39,7 +39,7 @@
           <field name="commission_percentage" />
           <field name="rent_schedule_ids" />
           <field name="rent_payment" />
-          <button type="object" string="" name="open_payment" icon="gtk-nekt" attrs="{'invisible': [('rent_payment','=','False')]}"/>
+          <button type="object" string="" name="open_payment" class="fa fa-book" attrs="{'invisible': [('rent_payment','=',False)]}"/>
         </tree>
       </field>
     </record>
