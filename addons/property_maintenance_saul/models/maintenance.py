@@ -5,56 +5,10 @@ import datetime
 # For debug use only
 from odoo.exceptions import UserError,ValidationError
 
-
 class MaintenanceTeamModified(models.Model):
     _inherit = 'maintenance.team'
 
     partner_id = fields.Many2one('res.partner', string='Company')
-
-
-class AccountComission(models.Model):
-    _name = 'account.asset.commission'
-
-
-    commission_percentage = fields.Float(string="Comisión (porcentaje)")
-    commission_value = fields.Float(string="Comisión")
-    property_id = fields.Many2one('account.asset.asset')
-
-    @api.onchange('commission_percentage', 'commission_value')
-    def check_commission(self):
-        if self.commission_percentage > 100:
-            raise ValidationError('Error en valores de comisión: No puedes elegir un porcentaje mayor al 100%')
-        if self.commission_percentage != 0 and self.commission_value != 0:
-            raise ValidationError('Error en valores de comisión: Solo se puede definir un valor porcentual o fijo, no ambos')
-
-
-class AccountAssetModified(models.Model):
-    _inherit = 'account.asset.asset'
-
-    maintenance_per_property = fields.One2many(
-            comodel_name='maintenance.property',
-            inverse_name='property_id',
-            store=True)
-    commission_ids = fields.One2many('account.asset.commission', inverse_name='property_id', string='Comisiones')
-    commission_percentage = fields.Float(string="Comisión (porcentaje)")
-    commission_value = fields.Float(string="Comisión")
-
-    def create_tenancy(self):
-        return {
-                'type': 'ir.actions.act_window',
-                'name': 'Crear contrato',
-                'res_model': 'account.analytic.account',
-                'view_type': 'form',
-                'view_mode': 'form',
-                'view_id': self.env.ref('property_management.property_analytic_view_form').id,
-                'target': 'current',
-                'context': {
-                    'default_property_id': self.id,
-                    'default_property_owner_id': self.property_owner.id,
-                    'default_commission_value': self.commission_value,
-                    'default_commission_percentage': self.commission_percentage,
-                    }
-                }
 
 
 class MaintenanceNames(models.Model):
@@ -158,14 +112,14 @@ class AccountAnalyticModified(models.Model):
 
     def open_payment(self):
         return {
-            'type': 'ir.actions.act_window',
-            'view_type': 'form',
-            'view_mode': 'form',
-            'view_id': self.env.ref('account.view_move_form').id,
-            'res_model': 'tenancy.rent.schedule',
-            'res_id': self.rent_payment.id,
-            'target': 'current',
-        }
+                'type': 'ir.actions.act_window',
+                'view_type': 'form',
+                'view_mode': 'form',
+                'view_id': self.env.ref('account.view_move_form').id,
+                'res_model': 'tenancy.rent.schedule',
+                'res_id': self.rent_payment.id,
+                'target': 'current',
+                }
 
     def add_contract_maintenance(self, rec, maintenance):
         self.env['maintenance.contract'].create([{
@@ -296,42 +250,10 @@ class AccountAnalyticModified(models.Model):
         self.load_maintenance_requests()
         self.action_invoice_payment()  # Generate maintenance invoices
 
-
-class TenancyRentScheduleModified(models.Model):
-    _inherit = 'tenancy.rent.schedule'
-
-    is_service = fields.Boolean()
-    maintenance_id = fields.Many2one('maintenance.request')
-
-
-class AccountMoveModified(models.Model):
-    _inherit = 'account.move'
-
-    def action_invoice_register_payment(self):
-        res = super(AccountMoveModified, self).action_invoice_register_payment()
-        new_context = res['context'].copy()
-
-        payment = self.invoice_line_ids[0]
-        payment_type = 'r'
-        if payment.is_service:
-            payment_type = 's'
-        elif not str(payment.maintenance_id) == 'maintenance.request()': 
-            payment_type = 'm'
-        elif self.gastos_extra:
-            payment_type = 'o'
-        
-        new_context.update({'default_tipo_de_pago': payment_type})
-        res.update({
-            'context': new_context,
-            })
-        return res
-
-
-class AccountPaymentModified(models.Model):
-    _inherit = 'account.payment'
-
-    def post(self):
-        res = super(AccountPaymentModified, self).post()
-        # raise UserError(str(res))
-        return res
+class MaintenanceAsset(models.Model):
+    _inherit = 'account.asset.asset'
+    maintenance_per_property = fields.One2many(
+            comodel_name='maintenance.property',
+            inverse_name='property_id',
+            store=True)
 

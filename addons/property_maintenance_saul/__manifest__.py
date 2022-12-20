@@ -34,6 +34,8 @@
         'security/ir.model.access.csv',
         'views/views.xml',
         'views/templates.xml',
+        'views/commissions.xml',
+        'views/maintenance.xml',
     ],
     # only loaded in demonstration mode
     'demo': [
