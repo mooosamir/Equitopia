@@ -26,7 +26,6 @@
         'property_management',
         'property_landlord_management',
         'property_commission',
-        'custom_property'
         ],
 
     # always loaded
@@ -34,6 +33,8 @@
         'security/ir.model.access.csv',
         'views/views.xml',
         'views/templates.xml',
+        'views/commissions.xml',
+        'views/maintenance.xml',
     ],
     # only loaded in demonstration mode
     'demo': [

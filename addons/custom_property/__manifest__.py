@@ -11,7 +11,13 @@
     'website': '',
     'depends': [
        'property_management',
+       'property_commission',
        'property_landlord_management',
+       'property_maintenance',
+       'property_penalty',
+       'website_custom_property',
+       'custom_property_fields_add',
+       'property_maintenance_saul',
        'om_account_asset',
        'calendar',
     ],
