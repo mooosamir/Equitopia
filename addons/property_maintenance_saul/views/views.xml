@@ -68,7 +68,7 @@
         </xpath>
       </field>
     </record>
-
+    <!-- FIXME
     <record model="ir.ui.view" id="account_payment_modified">
       <field name="model">account.payment</field>
       <field name="inherit_id" ref="account.view_account_payment_invoice_form" />
@@ -80,6 +80,7 @@
         </xpath>
       </field>
     </record>
+    -->
   
   </data>
 </odoo>
