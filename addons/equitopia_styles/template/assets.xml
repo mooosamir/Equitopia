@@ -26,11 +26,11 @@
 
 	<template id="assets_backend" name="Backend Assets" inherit_id="web.assets_backend">
 		<xpath expr="//link[last()]" position="after">
-            <link rel="stylesheet" type="text/scss" href="/forza_styles/static/src/scss/ogum_styles.scss"/>
+            <link rel="stylesheet" type="text/scss" href="/equitopia_styles/static/src/scss/ogum_styles.scss"/>
             
 		</xpath>
 		<xpath expr="//script[last()]" position="after">
-            <script type="text/javascript" src="/forza_styles/static/src/js/script_ogum.js" />
+            <script type="text/javascript" src="/equitopia_styles/static/src/js/script_ogum.js" />
 		</xpath>
 	</template>
 	
