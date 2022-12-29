@@ -11,6 +11,7 @@ from odoo.tools import DEFAULT_SERVER_DATETIME_FORMAT
 import json
 from lxml import etree
 import calendar
+
 class Rent_type_get(models.Model):
 
     _inherit="rent.type"
@@ -138,6 +139,65 @@ class Account_asset_asset_customs(models.Model):
                 ('property_mov_id','=',rec.id)])
 
 
+    def print_report_property_pdf(self):
+    	vals=[]    		
+    	user_id=self.env.user.partner_id.id
+    	#raise UserError(user_id)
+    	estados=self.env['estado.result']    	
+    	for lines in estados.search([('foreport','=',True),('manager_id','=',user_id)]):
+    		#calendario=self.env['calendar.event'].search([('property_calendary','=',lines.property_id.id)])
+    		#fecha_actual=datetime.now()
+    		#total_dias=calendar.monthrange(int(fecha_actual.year),fecha_actual.month)[1]
+    		#inicio=datetime(fecha_actual.year,fecha_actual.month,1)
+    		#fin=datetime(fecha_actual.year,fecha_actual.month,total_dias)
+    		#deff=fin-inicio
+
+    		#lista_fecha=[fecha for fecha in (inicio,fin)]
+
+
+    		#cal=calendar.HTMLCalendar()
+    		#cal_format=calendar.month(2022,12)
+    		#cal_format=cal_format.replace('border="0"','border="1"')
+    		
+    		#for item in calendario:
+
+    		vals.append({
+    			'property':lines.property_id.name,
+    			'company':lines.company_id.name,
+    			'fecha':lines.fecha_report,
+    			'manager':lines.manager_id.name,
+    			'owner':lines.owner_id.name,
+    			'estado':lines.estado,
+    			'rent_cronograma':lines.rent_cronograma,
+    			'rent_efectivo':lines.rent_efectivo,
+    			'mantenimientos':lines.mantenimientos,
+    			'servicios':lines.servicios,
+    			'otros_gastos':lines.otros_gastos,
+    			'comisiones':lines.comisiones,
+    			'dias_libres':lines.dias_libres,
+    			'dias_ocupados':lines.dias_ocupados,
+    			'rent_cobradas':lines.rent_cobradas,
+    			'rent_por_cobrar':lines.rent_por_cobrar,
+    			'ingresos_netos':lines.ingresos_netos,
+    			'imagen':lines.imagen,
+    		#	'calendar':cal_format,
+    			})
+
+    	
+    	data={
+    	   'ids':self.ids,
+    	   'model':self._name,
+    	   'vals':vals,    	   
+    	}
+    	return self.env.ref('custom_property.action_custom_property_report_menu').report_action(self, data=data)
+
+
+
+
+
+
+
+
 
 class Rental_rates(models.Model):
 
@@ -211,36 +271,29 @@ class Account_analytic_account_bh(models.Model):
 
     bandera_in_realizado = fields.Boolean(string='Realizado')
 
-    rate_busy=fields.Text(
+    rate_busy=fields.Html(
             string='Rango ocupado',
             )
 
-    suggested_month=fields.Date(
-            string='Mes',
-            default=lambda self: fields.datetime.now(),
-            )
+    suggested_month=fields.Selection(
+        string='Mes',
+        selection=[
+                 ('1', 'ENERO'),
+                 ('2', 'FEBRERO'),
+                 ('3', 'MARZO'), 
+                  ('4', 'ABRIL'),
+                 ('5', 'MAYO'),
+                 ('6', 'JUNIO'),                 
+                  ('7', 'JULIO'),
+                 ('8', 'AGOSTO'),
+                 ('9', 'SEPTIEMBRE'), 
+                  ('10', 'OCTUBRE'),
+                 ('11', 'NOVIEMBRE'),
+                 ('12', 'DICIEMBRE'), 
+        ],
+        default=lambda self:str(fields.datetime.now().month),
+        )
 
-	# ano_suggested = fields.Char(
-	#     string='Año',
-	# )
-
-	# suggested_month=fields.Selection(
-    #     string='Mes',
-    #     selection=[
-    #              ('1', 'ENERO'),
-    #              ('2', 'FEBRERO'),
-    #              ('3', 'MARZO'), 
-    #               ('4', 'ABRIL'),
-    #              ('5', 'MAYO'),
-    #              ('6', 'JUNIO'),                 
-    #               ('7', 'JULIO'),
-    #              ('8', 'AGOSTO'),
-    #              ('9', 'SEPTIEMBRE'), 
-    #               ('10', 'OCTUBRE'),
-    #              ('11', 'NOVIEMBRE'),
-    #              ('12', 'DICIEMBRE'), 
-    #     ],
-    #     )
 
 
     other_line_product_ids = fields.One2many(
@@ -645,11 +698,22 @@ class Account_analytic_account_bh(models.Model):
         if date_is_range_busy_start or date_is_range_busy_stop:
             raise UserError(_("El rengo de fecha de reserva ya esta ocupado, Favor de usar otra"))
 
+    def _matrix2vector(self, matrix):
+        vector = []
+        for element in matrix:
+            for item in element:
+                vector.append(item)
+        return vector
+
 
     @api.onchange('suggested_month','property_id')
     def _onchange_property_id(self):
 
-        date_suggested=self.suggested_month
+        date_temp=str(self.suggested_month)
+        actual=datetime.now()
+        date_suggested=actual.replace(month=int(date_temp))
+       
+
         total_dias=calendar.monthrange(int(date_suggested.year),date_suggested.month)[1]
         start_filter=date(date_suggested.year,date_suggested.month,1)
         stop_filter=date(date_suggested.year,date_suggested.month,total_dias)
@@ -658,22 +722,31 @@ class Account_analytic_account_bh(models.Model):
                                                   ('start','>=',start_filter),('stop','<=',stop_filter)])
 
         month_all=[x for x in range(1,total_dias+1)]	
+        
+        cal=calendar.HTMLCalendar()
+
+        cal_format=cal.formatmonth(actual.year,int(date_temp))
+        cal_format=cal_format.replace('border="0"','border="1"')
+
         list_free_days=[]
         if rangos:
             busy_days=[]
             for item in rangos:
-                busy_days=[x for x in range(item.start.day,item.stop.day+1)]
-            day_free=set(month_all).difference(set(busy_days))
+                busy_days.append([x for x in range(item.start.day,item.stop.day+1)])
+            # raise UserError(str(self._matrix2vector(busy_days)))
+            day_free=set(month_all).difference(set(self._matrix2vector(busy_days)))
             list_free_days.append(day_free)
-        html=''
-        cont=1
-        for lisx in list_free_days:
-            for x in lisx:
-                html+=' Dia: '+str(x)
-                if cont%7==0:
-                    html+="\n"
-                cont+=1
-        self.rate_busy=html
+
+        if list_free_days==0:
+        	list_free_days=month_all
+        #html=''
+        #cont=1
+        #mark_cal=cal_format
+        for lisx in list_free_days:        	
+        	for x in lisx:
+        		cal_format=cal_format.replace('>%i<'%x, 'style="color:red" bgcolor="#66ff66"><b><u>%i</u></b><'%x)
+
+        self.rate_busy=cal_format
 
     def get_correct_date_show(self,fecha):
         """
@@ -689,17 +762,6 @@ class Account_analytic_account_bh(models.Model):
             return fecha_real
 
 
-
-
-    # @api.onchange('chech_in','chech_out')
-    # def _onchange_chechinout(self):
-    # 	for rec in self:
-    # 		rangos=self.env['calendar.event'].search(
-    # 			[('property_calendary','=',rec.property_id.id),
-    # 			('start_date','<=',self.get_correct_date_show(rec.chech_in)),
-    # 			('stop_date','>=',self.get_correct_date_show(rec.chech_out))])
-    # 		if len(rangos)>0:
-    # 			raise UserError("La el rengo seleccionado ya esta reservado")
 
 
 # Codigo por Saul

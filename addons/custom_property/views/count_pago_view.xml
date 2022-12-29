@@ -51,6 +51,8 @@
 
          <xpath expr="//field[@name='currency_id']" position="after">
            <field name="entrega_acceso_id"/>
+           <!-- <button name="print_report_property_pdf"  string="Reporte" type="object" icon="icon"/> -->
+          
          </xpath>
         <xpath expr="//notebook" position="inside">
            <page string="Tarifas de propiedad" name="tarifas_propiedad">
@@ -185,10 +187,11 @@
                        
                    </group>
                     <group string="Control de fechas">
-                          <label for="suggested_month"/>
-                       <field name="suggested_month" nolabel="1"/>                     
-                         <field name="rate_busy"  string="Dias sugeridos" readonly="1"/>
+                        <label for="suggested_month"/>
+                        <field name="suggested_month" nolabel="1"/> 
+                        <field name="rate_busy"  string="Dias sugeridos" nolabel="1" readonly="1"/>
                     </group>
+ 
 
                 </group>
                 

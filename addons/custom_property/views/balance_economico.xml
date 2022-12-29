@@ -24,6 +24,7 @@
             <field name="arch" type="xml">
                 <form>
                         <group>
+                            
                             <group>
                                 <field name="property_mov_id"/>
                                 <field name="fecha" readonly="1"/>
