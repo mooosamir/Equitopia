@@ -10,8 +10,8 @@ const $grafica = document.querySelector("#show_informacion_mensual");
 const data={
    label:"Informacion Mensual",
    data:[programado,total_recibido],
-   backgroundColor: [fondocolorRGB(),fondocolorRGB()], // Color de fondo
-   borderColor: [colorcolorRGB(),colorcolorRGB()], // Color del borde
+   backgroundColor: ["#FFFF00","#3ADF00"], // Color de fondo
+   borderColor: ["#3ADF00","#FFFF00"], // Color del borde
    borderWidth: 1,// Ancho del borde
 
 }

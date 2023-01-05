@@ -165,19 +165,19 @@ class AccountAnalyticModified(models.Model):
                 elif maintenance.frequency == 'Weekly':
                     while times < rec.chech_out - rec.chech_in:
                         maintenance_requests.append(self.create_maintenance_request(rec, maintenance, times, 8))
-                        times += datetime.timedelta(1)
+                        times += datetime.timedelta(8)
                 elif maintenance.frequency == 'Monthly':
                     while times < rec.chech_out - rec.chech_in:
                         maintenance_requests.append(self.create_maintenance_request(rec, maintenance, times, 32))
-                        times += datetime.timedelta(1)
+                        times += datetime.timedelta(23)
                 elif maintenance.frequency == 'Semestral':
                     while times < rec.chech_out - rec.chech_in:
                         maintenance_requests.append(self.create_maintenance_request(rec, maintenance, times, 30*6))
-                        times += datetime.timedelta(1)
+                        times += datetime.timedelta(30*6)
                 elif maintenance.frequency == 'Yearly':
                     while times < rec.chech_out - rec.chech_in:
                         maintenance_requests.append(self.create_maintenance_request(rec, maintenance, times, 365))
-                        times += datetime.timedelta(1)
+                        times += datetime.timedelta(365)
                 else:
                     maintenance_requests.append(self.create_maintenance_request(rec, maintenance, times, 1, once=True))
                 maintenance.maintenance_requests = self.env['maintenance.request'].search([('maintenance_contract_id', '=', maintenance.id)]) 

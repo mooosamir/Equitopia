@@ -6,7 +6,6 @@
       <field name="arch" type="xml">
         
         <xpath expr="//field[@name='currency_id']" position="after">
-          <field name="commission_value" />
           <field name="commission_percentage" />
         </xpath>
 
@@ -19,8 +18,7 @@
       <field name="arch" type="xml">
 
         <field name="rent_type_id" position="after">
-          <field name="commission_value" readonly="1" />
-          <field name="commission_percentage" />
+          <field name="commission_percentage" readonly="1" />
         </field>
 
       </field>

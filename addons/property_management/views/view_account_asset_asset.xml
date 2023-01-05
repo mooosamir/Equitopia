@@ -72,7 +72,7 @@
                             <!-- Campos ocultos  -->
                             <field name="income_acc_id"  invisible='1'/>
                             <field name="expense_account_id" domain="[('internal_type','=','other')]" invisible='1'/>
-                            <field name="category_id"  string="Property Category"/>
+                            <field name="category_id"  string="Property Category" />
                             <field name="company_id" string="Property Management Company" invisible='1'/>
                             <field name="video_url" placeholder="//www.youtube.com/embed/mwuPTI8AT7M?rel=0"/>
                             <field name="currency_id"/>

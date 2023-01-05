@@ -15,5 +15,6 @@
         	<field name="state">code</field>
         	<field name="code">action=records.action_state_property_unic_send()</field>
     	</record>
+    	
 	</data>
 </odoo>

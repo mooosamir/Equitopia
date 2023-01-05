@@ -5,91 +5,102 @@
 			<t t-call="web.html_container">
 				<t t-call="web.external_layout">
 					<div class="page">
-						<div class="row">
+                    <h1 style="text-align:center;">Estado de resultados</h1>
+					<table class="table table-sm">
+							<thead>
+								<tr>
+									<th>Imagen</th>
+									<th>General</th>
+									<th>Gastos</th>
+									<th>Ocupacion</th>
+									<th>Neto</th>
+									<th>Historico</th>
+								</tr>
+							</thead>
+							<tbody>
+								<tr>
+									<td>
+										<t if="doc.property_id">
+										<span t-esc="doc.property_id.name"/>	
+										</t><br/>
+										<img t-attf-src="data:image/*;base64,{{doc.imagen}}" style="max-height: 80px;max-width: 145px;padding:2px;" align="center"/>
+										<t if="doc.estado">
+										<span t-esc="doc.estado"/>	
+										</t><br/>
+										<strong>Fecha</strong>
+										<t t-if="doc.fecha_report">
+											<span t-esc="context_timestamp(doc.fecha_report).strftime('%d-%m-%Y %H:%M')"/>
+										</t>
+									</td>
+									<td>
+										<strong>Manejador:</strong>
+							        	<span><t t-esc="doc.manager_id.name"/></span><br/>
+							        	<strong>Dueño:</strong>
+							        	<span><t t-esc="doc.owner_id.name"/></span><br/>
+							        	<strong>Rentas Programadas</strong>
+										<t t-if="doc.rent_cronograma">
+		     						  		<span t-field="doc.rent_cronograma" t-options="{'widget': 'monetary', 'display_currency': doc.currency_id}"/>
+		     						  	</t><br/>
+										<strong>Rentas Efectivas</strong>
+										<t t-if="doc.rent_efectivo">
+		     						  		<span t-field="doc.rent_efectivo" t-options="{'widget': 'monetary', 'display_currency': doc.currency_id}"/>
+		     						  	</t>	
+		     						</td>	
+									<td>
+										<strong>Mantenimietos:</strong>
+		     						  	<t t-if="doc.mantenimientos">
+		     						  		<span t-field="doc.mantenimientos" t-options="{'widget': 'monetary', 'display_currency': doc.currency_id}"/>
+		     						  	</t><br/>
+									    <strong>Servicios:</strong>
+									    <t t-if="doc.servicios">
+		     						  		<span t-field="doc.servicios" t-options="{'widget': 'monetary', 'display_currency': doc.currency_id}"/>
+		     						  	</t><br/>
+									  	<strong>Otros gastos</strong>
+									  	<t t-if="doc.otros_gastos">
+		     						  		<span t-field="doc.otros_gastos" t-options="{'widget': 'monetary', 'display_currency': doc.currency_id}"/>
+		     						  	</t><br/>
+									   	<strong>Comisiones</strong>	
+									   	<t t-if="doc.comisiones">
+		     						  		<span t-field="doc.comisiones" t-options="{'widget': 'monetary', 'display_currency': doc.currency_id}"/>
+		     						  	</t>
+										
+									</td>
 
-							<div class="col-4">
-								<h4>General</h4>
-								<strong>Propiedad</strong>
-								<t if="doc.property_id">
-								<span t-esc="doc.property_id.name" />	
-								</t><br/>
-								<strong>Fecha</strong>
-								<t t-if="doc.fecha_report">
-									<span t-esc="context_timestamp(doc.fecha_report).strftime('%d-%m-%Y %H:%M')"/>
-								</t>
-							</div>
-							<div class="col-2">								
-								<img t-attf-src="data:image/*;base64,{{doc.imagen}}" style="max-height: 80px;max-width: 145px;padding:2px;" align="center"/>
-							</div>
-     						<div class="col-6">
-     						 <h4>Gastos</h4>
-     						  	<strong>Mantenimietos:</strong>
-     						  	<t t-if="doc.mantenimientos">
-     						  		<span t-field="doc.mantenimientos" t-options="{'widget': 'monetary', 'display_currency': doc.currency_id}"/>
-     						  	</t><br/>
-							    <strong>Servicios:</strong>
-							    <t t-if="doc.servicios">
-     						  		<span t-field="doc.servicios" t-options="{'widget': 'monetary', 'display_currency': doc.currency_id}"/>
-     						  	</t><br/>
-							  	<strong>Otros gastos</strong>
-							  	<t t-if="doc.otros_gastos">
-     						  		<span t-field="doc.otros_gastos" t-options="{'widget': 'monetary', 'display_currency': doc.currency_id}"/>
-     						  	</t><br/>
-							   	<strong>Comisiones</strong>	
-							   	<t t-if="doc.comisiones">
-     						  		<span t-field="doc.comisiones" t-options="{'widget': 'monetary', 'display_currency': doc.currency_id}"/>
-     						  	</t>
-								<strong>Ingresos netos</strong>	
-							   	<t t-if="doc.ingresos_netos">
-     						  		<span t-field="doc.ingresos_netos" t-options="{'widget': 'monetary', 'display_currency': doc.currency_id}"/>
-     						  	</t>
-							
-     						</div>
-						</div>			             
-                        
+									<td>
+										 <strong>Libre</strong>
+			     						 <t t-if="doc.dias_libres">
+			     						  		<span t-esc="doc.dias_libres"/>
+			     						  	</t><br/>
+			     						 <strong>No libre</strong>
+			     						 <t t-if="doc.dias_ocupados">
+			     						  		<span t-esc="doc.dias_ocupados"/>
+			     						  	</t>
+									</td>
 
-						<div class="row">
+									<td>
+										<strong>Ingreso Neto:</strong>
+								        <span><t t-esc="doc.ingresos_netos"/></span>
+									</td>
+									
+									<td>
+		     						  	<strong>Rentas cobradas</strong>
+										<t t-if="doc.rent_cobradas">
+		     						  		<span t-field="doc.rent_cobradas" t-options="{'widget': 'monetary', 'display_currency': doc.currency_id}"/>
+		     						  	</t><br/>
+										<strong>Rentas ha cobrar</strong>
+										<t t-if="doc.rent_por_cobrar">
+		     						  		<span t-field="doc.rent_por_cobrar" t-options="{'widget': 'monetary', 'display_currency': doc.currency_id}"/>
+		     						  	</t>										
+									</td>
 
-							<div class="col-6">
-								<h4>Renta</h4>
-								<strong>Rentas Programadas</strong>
-								<t t-if="doc.rent_cronograma">
-     						  		<span t-field="doc.rent_cronograma" t-options="{'widget': 'monetary', 'display_currency': doc.currency_id}"/>
-     						  	</t><br/>
-								<strong>Rentas Efectivas</strong>
-								<t t-if="doc.rent_efectivo">
-     						  		<span t-field="doc.rent_efectivo" t-options="{'widget': 'monetary', 'display_currency': doc.currency_id}"/>
-     						  	</t>
-							</div>
-     						<div class="col-6">
-     						 <h4>Ocupacion</h4>
-     						 <strong>Libre</strong>
-     						 <t t-if="doc.dias_libres">
-     						  		<span t-esc="doc.dias_libres"/>
-     						  	</t><br/>
-     						 <strong>No libre</strong>
-     						 <t t-if="doc.dias_ocupados">
-     						  		<span t-esc="doc.dias_ocupados"/>
-     						  	</t>
-     						</div>
-						</div>
-						<div class="row">
+								</tr>
+							</tbody>
+					</table>
 
-							<div class="col-6">
-								<h4>Historico</h4>
-								<strong>Rentas cobradas</strong>
-								<t t-if="doc.rent_cobradas">
-     						  		<span t-field="doc.rent_cobradas" t-options="{'widget': 'monetary', 'display_currency': doc.currency_id}"/>
-     						  	</t><br/>
-								<strong>Rentas ha cobrar</strong>
-								<t t-if="doc.rent_por_cobrar">
-     						  		<span t-field="doc.rent_por_cobrar" t-options="{'widget': 'monetary', 'display_currency': doc.currency_id}"/>
-     						  	</t>
-							</div>
-     						<div class="col-6">
-     						
-     						</div>
-						</div>
+
+
+						
+						
 					</div>
 				</t>
 			</t>
