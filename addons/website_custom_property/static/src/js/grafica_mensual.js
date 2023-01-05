@@ -6,12 +6,12 @@
     var ctxgraficaefeprogramado=new Chart(grafica,{
                 type:'doughnut',
                 data:{
-                    labels:['Rentas Programadas','Rentas Efectivo'],
+                    labels:['Rentas Efectivo','Rentas Programadas'],
                     datasets:[{
                         labels:'Generado y Pendientes',
                         data: data,
-                        backgroundColor: [fondocolorRGB(),fondocolorRGB()],
-                        borderColor: [colorcolorRGB(),colorcolorRGB()],
+                        backgroundColor: ["#3ADF00","#FFFF00"],
+                        borderColor: ["#FFFF00","#3ADF00"],
                         borderWidth: 1,
                     }]                  
             

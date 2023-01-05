@@ -1,7 +1,7 @@
 
  //INICIA GRAFICACION PARA GRAFICAR METRICAS
 function graficaciondemetricas(grafica,metricas){ 
-    const etiquetas=['Ingresos Netos','HOA','Otro sgastos']
+    const etiquetas=['Ingresos Netos','Mantenimientos','Servicios','Otros gastos','Comisiones']
     var ctxgraficametricas=new Chart(grafica,{
                 type:'pie',
                 data:{
@@ -9,8 +9,8 @@ function graficaciondemetricas(grafica,metricas){
                     datasets:[{
                         labels:'Metricas',
                         data: metricas,
-                        backgroundColor: [fondocolorRGB(),fondocolorRGB(),fondocolorRGB()],
-                        borderColor: [colorcolorRGB(),colorcolorRGB(),colorcolorRGB()],
+                        backgroundColor: [fondocolorRGB(),fondocolorRGB(),fondocolorRGB(),fondocolorRGB(),fondocolorRGB()],
+                        borderColor: [colorcolorRGB(),colorcolorRGB(),colorcolorRGB(),fondocolorRGB(),fondocolorRGB()],
                         borderWidth: 1,
                     }]                  
             

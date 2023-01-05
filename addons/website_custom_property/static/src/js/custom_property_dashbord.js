@@ -64,7 +64,6 @@ odoo.define('website_custom_property.custom_property_dashbord', function (requir
             'mes':mes,
             'propiedad':filter_property,
         }).then(function(data){  
-            
             var $grafica=null;
             var html=''
             var data_metricas=[]
@@ -88,18 +87,18 @@ odoo.define('website_custom_property.custom_property_dashbord', function (requir
                 html+="<td> <div class='calendar_dinamico' id='calendar"+item['propiedad_id']+"'></div></td>"
                 html+="<td>"
                 var metricas=item['metricas'];
-                console.log(metricas)
                 //metricas por propiedad
-                html+="<strong>Mantenimientos:</strong><span class='manteni_list'>"+convert(metricas[0])+"</span></br>"
-                html+="<strong>Servicios:</strong><span class='servi_list'>"+convert(metricas[1])+"</span></br>"
-                html+="<strong>Ingresos Netos:</strong><span class='ingresos_list'>"+convert(metricas[2])+"</span></br>"
-                html+="<strong>HOA:</strong><span class='hoa_list'>"+convert(metricas[0])+"</span></br>"
-                html+="<strong>Otros gastos:</strong><span class='otros_list'>"+convert(metricas[0])+"</span></br>"
+                html+="<strong>Mantenimientos:</strong><span class='manteni_list'>"+convert(metricas[1])+"</span></br>"
+                html+="<strong>Servicios:</strong><span class='servi_list'>"+convert(metricas[2])+"</span></br>"
+                html+="<strong>Ingresos Netos:</strong><span class='ingresos_list'>"+convert(metricas[0])+"</span></br>"
+                html+="<strong>Comisiones:</strong><span class='hoa_list'>"+convert(metricas[4])+"</span></br>"
+                html+="<strong>Otros gastos:</strong><span class='otros_list'>"+convert(metricas[3])+"</span></br>"
                 //termina metricas
                 html+="<canvas class='graficarmetricas'  id='graficarmetricas"+item['propiedad_id']+"'></canvas><br/>"               
                 html+="</td>"
                 html+="</tr>"
-                data_metricas.push([metricas[0],metricas[1],metricas[2]])   
+                data_metricas.push([metricas[0],metricas[1],metricas[2],metricas[3],metricas[4]])   
+
                 tempgeneralpediente=item['general_pediente']
                 programado+=tempgeneralpediente[0][0]
                 total_recibido+=tempgeneralpediente[0][1]
@@ -107,10 +106,10 @@ odoo.define('website_custom_property.custom_property_dashbord', function (requir
      
              }
             $("#table_result").html(html);
-            $("#total_recibido").text(convert(total_recibido));
-            $("#programado").text(convert(programado));
-            $("#input_total_recibido").val(total_recibido);
-            $("#input_programado").val(programado);
+            $("#total_recibido").text(convert(data['rentas_efectivas']));
+            $("#programado").text(convert(data['rentas_programadas']));
+            $("#input_total_recibido").val(data['rentas_efectivas']);
+            $("#input_programado").val(data['rentas_programadas']);
             $("#total_mantenimiento").text(convert(data['total_mantenimiento']));
             $("#total_servicios").text(convert(data['total_servicios']));
             $("#ingreso_neto").text(convert(data['total_neto']))
@@ -120,7 +119,7 @@ odoo.define('website_custom_property.custom_property_dashbord', function (requir
             //grafica dinamica 1-----------------------------------------------------------------
             var data_info=[]
             for(let item of data['data']){               
-               data_info.push(item['use_property'][0])
+               data_info.push(item['use_property'])
             }
             var index=0;          
             $(".graficas_dinamicas").each(function(){//recorrer todo los canvas
@@ -146,7 +145,7 @@ odoo.define('website_custom_property.custom_property_dashbord', function (requir
            //grafica dinamica 2--------------------------------------------------------------------
             var datainfo=[]
             for(let item of data['data']){
-               const temp=item['general_pediente'][0]
+               const temp=item['general_pediente']
                datainfo.push(temp);
             }
             var index=0;          
@@ -166,12 +165,9 @@ odoo.define('website_custom_property.custom_property_dashbord', function (requir
           }); 
 
           Mensual_informacion_graficas();     
-            
-
- 
-          
+                  
              //GRAFICA DE BARRAS DE FLUJO DE EFECTIVO
-             const ingreso_cobrado=data['ingreso_cobrado']
+             const propiedad_estadisticas=data['propiedad_estadisticas']
              const etiquetas=data['etiqueta']
              $("#grafica_barras").append("<canvas  id='grafica_barras_view' width='100%' height='100%'></canvas>")
              var $grafica_barras=null;
@@ -179,28 +175,42 @@ odoo.define('website_custom_property.custom_property_dashbord', function (requir
                 $grafica_barras = document.querySelector("#grafica_barras_view")//.getContext('2d');
              }             
              $("#grafica_barras").css('width','95%').css('height','300px')
-             var arry_data=[]
-             var leng=ingreso_cobrado.length
+             //var arry_data=[]
+             var data_ingresos=[]
+             //var data_egreso=[]
+             var leng=propiedad_estadisticas.length
 
              for(let i =0;i<leng;i++){
-                arry_data.push({
-                    label:etiquetas[i],
-                    data:ingreso_cobrado[i],
-                    backgroundColor: fondocolorRGB(),
-                    borderColor:colorcolorRGB(),
+                data_ingresos.push({
+                    label:etiquetas[i]+"/ Ingresos",
+                    data:propiedad_estadisticas[i][0],
+                    backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                    borderColor:'rgba(54, 162, 235, 1)',
+                    //hidden:true,
+                    borderWidth: 1,
+                    maxBarThickness:8,
+
+                })
+                data_ingresos.push({
+                    label:etiquetas[i]+"/ Egresos",
+                    data:propiedad_estadisticas[i][1],
+                    backgroundColor: 'rgba(255, 159, 64, 0.2)',
+                    borderColor:'rgba(255, 159, 64, 1)',
                     hidden:true,
                     borderWidth: 1,
                     maxBarThickness:8,
 
                 })
-             }          
-         
+
+             }
+     
              var ctxgrafica_barras=new Chart($grafica_barras,{
                 type:'bar',
+
                 data:{
                     labels:['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre'
                         ,'Octubre','Noviembre','Diciembre'],
-                    datasets:arry_data                  
+                    datasets:data_ingresos                  
             
                 }, 
                 options:{
@@ -226,7 +236,7 @@ odoo.define('website_custom_property.custom_property_dashbord', function (requir
                         datalabels:{
                             formatter: (value,context)=>{
                                 if(value>0){
-                                  return "Ingresos \n"+ convert(value);    
+                                  return convert(value);    
                                 }
                                 else{
                                     return ''
@@ -246,7 +256,7 @@ odoo.define('website_custom_property.custom_property_dashbord', function (requir
                              label: function(tooltipitem,data){
                                  var label=ctxgrafica_barras.data.labels[tooltipitem.dataIndex]
                                  var value=ctxgrafica_barras.data.datasets[tooltipitem.datasetIndex].data[tooltipitem.dataIndex]
-                                 return label +"Ingresos \n"+convert(value)                 
+                                 return label +convert(value)                 
 
                         
                                }
@@ -261,7 +271,7 @@ odoo.define('website_custom_property.custom_property_dashbord', function (requir
            
             });
 
-            $("#global_mes_cobrado").text(convert(data['renta_global_cobrados']));
+             $("#global_mes_cobrado").text(convert(data['renta_global_cobrados']));
             $("#global_mes_pen_cobrado").text(convert(data['rentas_globla_pendientes']));
             $("#input_global_mes_cobrado").val(data['renta_global_cobrados']);
             $("#input_global_mes_pen_cobrado").val(data['rentas_globla_pendientes']);
@@ -312,9 +322,10 @@ odoo.define('website_custom_property.custom_property_dashbord', function (requir
     ajax.jsonRpc('/minicalendario','call',{
         'propiedad':filtro,
     }).then(function(data){
+     var data_events=data['eventos']      
       $("#"+calendar).MEC({
       from_monday: false,
-         events: data['eventos']
+         events: data_events,
       });
     }); 
 
