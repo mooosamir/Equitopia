@@ -70,5 +70,3 @@ class AccountAnalyticModified(models.Model):
                 'target': 'current',
                 }
 
-
-

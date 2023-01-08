@@ -247,7 +247,7 @@ class Balance_ecomonico(models.Model):
 
 
 	type_payment = fields.Selection([('r', "Renta"), 
-		("m", "Mantenimiento"), ("s", "Servicio"), ("o", "Otros")])
+		("m", "Mantenimiento"), ("s", "Servicio"), ("o", "Otros"), ("c", "Comisiones")])
 
 	cant_mov = fields.Float(string='Cantidad')
 

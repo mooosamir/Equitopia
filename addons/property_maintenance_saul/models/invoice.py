@@ -21,6 +21,8 @@ class AccountMoveModified(models.Model):
             payment_type = 'm'
         elif self.gastos_extra:
             payment_type = 'o'
+        elif self.is_commission:
+            payment_type = 'c'
         
         new_context.update({'default_tipo_de_pago': payment_type})
         res.update({
