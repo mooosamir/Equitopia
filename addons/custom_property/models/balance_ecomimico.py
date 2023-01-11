@@ -26,18 +26,16 @@ class Balance_ecomonico_line(models.Model):
 
 	company_id = fields.Many2one(
         comodel_name='res.company',
-        string='Company',
-        default=lambda self: self.env.user.company_id)
+        string='Company')
+        #default=lambda self: self.env.user.company_id)
 
 	currency_id = fields.Many2one(
         comodel_name='res.currency',
-        related='company_id.currency_id',
-        string='Currency',
-        required=True)
+        #related='company_id.currency_id',
+        string='Currency')
+        #required=True)
 
-	# mes = fields.Char(
-	#     string='Mes',
-	# )
+
 	mes_num = fields.Char(
 	    string='Mes num',
 	)
@@ -88,7 +86,9 @@ class Balance_ecomonico_line(models.Model):
 			fin=datetime(self.fecha.year,self.fecha.month,dia)
 			data=self.env['account.payment'].search([('property_id','=',self.property_mov_id.id),
 			('calc_balance','=',False),('state','<>','draft'),('payment_date','>=',inicio),
-			 ('payment_date','<=',fin)],order='payment_date asc')		
+			 ('payment_date','<=',fin)],order='payment_date asc')
+
+			self.currency_id=self.property_mov_id.currency_id.id
 
 
 			temp_data_old=[]
@@ -261,14 +261,14 @@ class Balance_ecomonico(models.Model):
 
 	company_id = fields.Many2one(
         comodel_name='res.company',
-        string='Company',
-        default=lambda self: self.env.user.company_id)
+        string='Company')
+       # default=lambda self: self.env.user.company_id)
 
 	currency_id = fields.Many2one(
         comodel_name='res.currency',
-        related='company_id.currency_id',
-        string='Currency',
-        required=True)
+        #related='company_id.currency_id',
+        string='Currency')
+        #required=True)
 
 	line_invoice = fields.Text(
 	    string='Desarrollo de pago',

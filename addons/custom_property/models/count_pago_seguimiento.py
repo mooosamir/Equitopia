@@ -227,6 +227,7 @@ class Rental_rates(models.Model):
 
     fecuencia_de_pagos = fields.Integer(
         string='Frecuencia',
+        default="1",
     )
 
     deposito = fields.Float(

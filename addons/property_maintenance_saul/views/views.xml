@@ -6,6 +6,9 @@
       <field name="arch" type="xml">
        
         <!-- Campos ocultos -->
+        <xpath expr="//page[@name='history']" position="attributes">
+          <attribute name="invisible">1</attribute>
+        </xpath>
         <xpath expr="//page[@name='occupancy']" position="attributes">
           <attribute name="invisible">1</attribute>
         </xpath>

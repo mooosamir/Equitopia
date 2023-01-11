@@ -19,7 +19,7 @@
           <field name="name">Property Manager</field>
           <field name="res_model">calendar.event</field>
           <field name="type">ir.actions.act_window</field>
-          <field name="view_mode">calendar,tree,form</field>
+          <field name="view_mode">tree,calendar,form</field>
           <field name="domain">[('property_calendary','=',active_id)]</field>
     </record>
 

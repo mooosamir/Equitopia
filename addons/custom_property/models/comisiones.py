@@ -9,10 +9,12 @@ class Contratos(models.Model):
 
     def gen_commissions_invoice(self):
         month = datetime.date.today().month
-        contracts = self.search([('chech_out','<=',datetime.date.today()), ('commission_invoice','=',False)])
+        contracts = self.search([('chech_out','<=',datetime.date.today()), ('mirror_contract_id.commission_invoice','=',False)])
         commission = 0
         for contract in contracts:
             commission += contract.commission_value
+        if len(contracts) < 1:
+            return
         contract = contracts[0]
         inv_line_dict = {
             'quantity': 1,
@@ -36,7 +38,7 @@ class Contratos(models.Model):
         new_invoice = self.env['account.move'].create(inv_line_values)
         new_invoice.action_post()
         for contract in contracts:
-            contract.commission_invoice = new_invoice.id
+            contract.mirror_contract_id.commission_invoice = new_invoice.id
 
 class Factura(models.Model):
     _inherit = 'account.move'

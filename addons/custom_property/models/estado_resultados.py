@@ -261,6 +261,11 @@ class Estado_resultados(models.Model):
 
 			totalgastos=mantenimientos+servicios+otros_gastos		
 
+			#comsiones
+			comisiones=sum(pagos.search([('property_id','=',pd.id),('tipo_de_pago','=','c'),
+			  	('payment_date','>=',date_start),('payment_date','<=',date_stop)]).mapped('amount'))
+
+
 			if len(propiedades)>1:
 				data_save={
 			     'property_id':pd.id, 
