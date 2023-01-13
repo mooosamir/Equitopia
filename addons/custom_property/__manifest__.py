@@ -26,6 +26,7 @@
        'views/estado_resultado.xml',
        'views/graph_view_state.xml',
        'views/templeta_assets.xml',
+       'views/comisiones.xml',
        'report/property_report.xml',
        'report/report_contrator_email.xml',
        'report/menu_report_contraro.xml',
@@ -35,7 +36,8 @@
        'data/crono_detalle_economico.xml',
        'data/email_template.xml',
        'data/email_template_estado.xml',
-       'data/accones_server.xml'
+       'data/accones_server.xml',
+        'data/crono_comisiones.xml',
     ],
    
 }

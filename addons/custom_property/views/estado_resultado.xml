@@ -37,7 +37,7 @@
 	                                <field name="estado" readonly="1" force_save="1"/>
 	                                <field name="foreport" force_save="1"/>
 	                                <field name="preview" invisible="1" force_save="1"/>
-	                                <field name="data_graph"/>
+	                                <field name="reservaciones"/>
 	                            </group>
 	                            <group string="Rentas">
 	                                 <field name="rent_cronograma"  widget="monetary" force_save="1" options="{'currency_field': 'currency_id'}" readonly="1"/>

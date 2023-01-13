@@ -64,7 +64,7 @@ class Account_move_hp(models.Model):
 class Account_payment_custom(models.Model):
     _inherit = 'account.payment'
 
-    tipo_de_pago = fields.Selection([('r', "Renta"), ("m", "Mantenimiento"), ("s", "Servicio"), ("o", "Otros")])
+    tipo_de_pago = fields.Selection([('r', "Renta"), ("m", "Mantenimiento"), ("s", "Servicio"), ("o", "Otros"), ("c", "Comisiones")])
 
     calc_balance = fields.Boolean(string='Balance')
 
@@ -227,6 +227,7 @@ class Rental_rates(models.Model):
 
     fecuencia_de_pagos = fields.Integer(
         string='Frecuencia',
+        default="1",
     )
 
     deposito = fields.Float(
@@ -323,6 +324,19 @@ class Account_analytic_account_bh(models.Model):
             return tarifa_dias #rango tres
 
 
+    def get_correct_date(self,fecha):
+        """
+        Convertir la fecha que esta guarda en la base de datos a una que sea
+        totalmente funcional para el website
+        """     
+        user_tz = self.env.user.tz or pytz.utc
+        local = pytz.timezone(user_tz)
+        fecha_real=datetime.strftime(pytz.utc.localize
+            (datetime.strptime(fecha.strftime("%Y-%m-%d %H:%M:%S"), DEFAULT_SERVER_DATETIME_FORMAT)).
+            astimezone(local),"%Y-%m-%d %H:%M:%S")
+        return fecha_real
+
+
     def calcular_precios_renta(self):
         if not self.property_owner_id:
             ṕropiedad=self.env['account.asset.asset'].search([
@@ -362,8 +376,8 @@ class Account_analytic_account_bh(models.Model):
         data_calendary={
                 'name':name_name,
                 'partner_ids':partner_ids,
-                'start':self.chech_in,
-                'stop':self.chech_out,
+                'start':self.get_correct_date(self.chech_in),
+                'stop':self.get_correct_date(self.chech_out),
                 'allday':True,
                 'property_calendary':self.property_id.id,  
                 'property_tanency':self.id,
@@ -733,7 +747,7 @@ class Account_analytic_account_bh(models.Model):
             busy_days=[]
             for item in rangos:
                 busy_days.append([x for x in range(item.start.day,item.stop.day+1)])
-            # raise UserError(str(self._matrix2vector(busy_days)))
+            #raise UserError(str(self._matrix2vector(busy_days)))
             day_free=set(month_all).difference(set(self._matrix2vector(busy_days)))
             list_free_days.append(day_free)
 
@@ -744,7 +758,7 @@ class Account_analytic_account_bh(models.Model):
         #mark_cal=cal_format
         for lisx in list_free_days:        	
         	for x in lisx:
-        		cal_format=cal_format.replace('>%i<'%x, 'style="color:red" bgcolor="#66ff66"><b><u>%i</u></b><'%x)
+        		cal_format=cal_format.replace('>%i<'%x, 'style="color:green" bgcolor="#66ff66"><b><u>%i</u></b><'%x)
 
         self.rate_busy=cal_format
 

@@ -133,10 +133,9 @@ class Estado_resultados(models.Model):
 	    string='Previesta',
 	)
 
-	data_graph=fields.Char(
-	    string='Data',
+	reservaciones = fields.Text(
+	    string='recervaciones',
 	)
-
 
     #Al seleccionar una propiedad llama a la funcion o accion para cargar los respectivos datos 
 	@api.onchange('property_id')
@@ -242,6 +241,13 @@ class Estado_resultados(models.Model):
 			otros_gastos=sum(pagos.search([('property_id','=',pd.id),('tipo_de_pago','=','o'),
 			  	('payment_date','>=',date_start),('payment_date','<=',date_stop)]).mapped('amount'))
 
+			reservaciones=self.env['calendar.event'].search([('property_calendary','=',pd.id),
+				('start','>=',date_start),('stop','<=',date_stop)])
+
+			html=''
+			for item in reservaciones:
+				html+=str(item.start)+">"+str(item.stop)+'\n'
+
 			dict_state={
 			'new_draft':'Reserva Abierta',
 			'draft':'Disponible',
@@ -254,6 +260,11 @@ class Estado_resultados(models.Model):
 			}
 
 			totalgastos=mantenimientos+servicios+otros_gastos		
+
+			#comsiones
+			comisiones=sum(pagos.search([('property_id','=',pd.id),('tipo_de_pago','=','c'),
+			  	('payment_date','>=',date_start),('payment_date','<=',date_stop)]).mapped('amount'))
+
 
 			if len(propiedades)>1:
 				data_save={
@@ -279,8 +290,9 @@ class Estado_resultados(models.Model):
 				 'foreport':True,
 				 'totalgastos_full':totalgastos,
 				 'preview':True,
+				 'recervaciones':html,
 				}
-				estados_lista=datfor.search([('property_id','=',pd.id)])
+				estados_lista=datfor.search([('property_id','=',pd.id),('foreport','=',True)])
 				if len(estados_lista)>=1:
 					estados_lista.update(data_save)
 					if pd.send_state_result:
@@ -304,6 +316,7 @@ class Estado_resultados(models.Model):
 				self.ingresos_netos=rent_efectivo-(totalgastos)
 				self.foreport=True
 				self.totalgastos_full=totalgastos
+				self.reservaciones=html
 				#self.preview=False
 
 
