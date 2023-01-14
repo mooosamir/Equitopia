@@ -308,19 +308,25 @@ class Website_dashborad_property(http.Controller):
 			[('partner_ids','in',user_id)])
 		eventos=[]	
 		for evento in datos_calendario:
-			inv_ref=request.env['account.analytic.account'].sudo().search(
+			#buscar contrato relacionado con el calendario
+			cont_ref=request.env['account.analytic.account'].sudo().search(
 				[('id','=',evento.property_tanency.id)])
 			total_rent_recibido=0.0
 			total_rent_pend=0.0
-			for inv_ref in inv_ref.rent_schedule_ids:
-				pagos=request.env['account.payment'].sudo().search([
-					('communication','=',inv_ref.invc_id.name),('payment_date','>=',evento.start),
-					('payment_date','<=',evento.stop),('tipo_de_pago','=','r')])
-				for item_pago in pagos:
-					total_rent_recibido=+item_pago.amount					
-			total_rent_pend+=inv_ref.invc_id.amount_residual
+		
+			#crear fecha de inicio y fin de mes
+			dia=calendar.monthrange(evento.start.year,evento.start.month)[1]
+			inicio=evento.start.replace(day=1)#dias inicial del mes
+			fin=evento.stop.replace(day=dia)#dia final del  mes
 
-			
+
+			for inv_ref in cont_ref.rent_schedule_ids:
+				if inv_ref.invc_id.type=='out_invoice':
+					total_rent_recibido=sum(request.env['account.payment'].sudo().search([
+					('communication','=',inv_ref.invc_id.name),('payment_date','>=',inicio),
+					('payment_date','<=',fin),('tipo_de_pago','=','r')]).mapped('amount'))					
+					total_rent_pend+=inv_ref.invc_id.amount_residual		
+		
 			eventos.append({
 				'id':evento.id,
 				'title':evento.name,
@@ -338,7 +344,6 @@ class Website_dashborad_property(http.Controller):
                 'programado_op':total_rent_pend,
                 'recibido_op':total_rent_recibido,
               	})
-		#	raise UserError(str(eventos))
 		return Response(json.dumps(eventos), 
 		content_type='application/json;charset=utf-8',status=200)
 
@@ -391,6 +396,172 @@ class Website_dashborad_property(http.Controller):
 		}
 
 		return result
+
+
+
+	@http.route('/property/dashbord', methods=['POST', 'GET'], csrf=False, type='http', auth="user", website=True)
+	def print_id(self, **kw):		
+		property_id=request.env['estado.result'].sudo().search([('owner_id','=',self.get_user_login()),('foreport','=',True)])
+		if property_id:
+			pdf = request.env.ref('custom_property.report_estado_propiedad').sudo().render_qweb_pdf([property_id.id])[0]
+			pdfhttpheaders = [('Content-Type', 'application/pdf'), ('Content-Length', len(pdf))]
+		return request.make_response(pdf, headers=pdfhttpheaders)
+
+
+	# @http.route('/loadata/propiedad',type='json',website=True,auth='user')
+	# def print_data_propiedad_(self, **kw):
+	# 	propiedades=kw.get('propiedades')
+	# 	fecha=kw.get('fecha_ano_mes_cuerr')
+	# 	split_fecha=fecha.split('/')
+
+	# 	nom_numero=0
+
+	# 	if (split_fecha[0]=='enero'):
+	# 		nom_numero=1
+	# 	if (split_fecha[0]=='febrero'):
+	# 		nom_numero=2
+	# 	if (split_fecha[0]=='marzo'):
+	# 		nom_numero=3
+	# 	if (split_fecha[0]=='abril'):
+	# 		nom_numero=4
+	# 	if (split_fecha[0]=='mayo'):
+	# 		nom_numero=5
+	# 	if (split_fecha[0]=='junio'):
+	# 		nom_numero=6
+	# 	if (split_fecha[0]=='julio'):
+	# 		nom_numero=7
+	# 	if (split_fecha[0]=='agosto'):
+	# 		nom_numero=8
+	# 	if (split_fecha[0]=='septiembre'):
+	# 		nom_numero=9
+	# 	if (split_fecha[0]=='octubre'):
+	# 		nom_numero=10
+	# 	if (split_fecha[0]=='noviembre'):
+	# 		nom_numero=11
+	# 	if (split_fecha[0]=='diciembre'):
+	# 		nom_numero=12
+
+	# 	fecha_start=date(int(split_fecha[1]),int(nom_numero),1)
+	# 	days_max=calendar.monthrange(int(fecha_start.year),int(fecha_start.month))[1]
+	# 	fecha_stop=date(int(split_fecha[1]),int(nom_numero),days_max)
+
+	# 	cantidad_recibido=0.0
+
+
+	# 	for pd in propiedades:
+	# 		cantidad_recibido=sum(request.env['account.payment'].sudo().search([
+	# 			('property_id','=',pd),('tipo_de_pago','=','r'),
+	# 			('payment_date','>=',fecha_start),('payment_date','<=',fecha_stop)]).mapped('amount'))
+
+
+	# 		cantidad_programada=request.env['account.move'].sudo().search([
+	# 			('property_id','=',pd)]).mapped('amount_residual')
+
+	# 	#	raise UserError(str(cantidad_recibido))
+
+
+	# 	#raise UserError(fecha_filter)
+		
+
+
+
+
+	
+
+
+
+	@http.route('/tenant_details',type='http',website=True,auth='user')
+	def get_view_contrato(self,**kw):
+		contrato=kw.get('contrato')
+		alert=kw.get('link_alerta')
+		if alert:
+			request.env['alert.clock'].sudo().search([('id','=',alert)]).marcarleido=True
+
+		data_contrato=request.env['account.analytic.account'].sudo().search([('id','=',contrato)])
+		locale.setlocale(locale.LC_ALL, '')
+		data_rent=[]
+		for item in data_contrato.rent_schedule_ids:
+			data_rent.append({
+				'hecho_pago':item.hecho_pago,
+				'start_date':item.start_date.strftime('%m/%d/%Y'),
+				'amount':str(locale.currency(item.amount,grouping=True)),
+				'pen_amt':str(locale.currency(item.pen_amt,grouping=True)),
+				'cheque_detail':item.cheque_detail,
+				'inv':item.invc_id.name,
+				'note':item.note
+				})
+	
+		data_mente=[]
+		for item in data_contrato.maintenance_per_property:
+			data_mente.append({
+				'name':item.name.name,
+				'tems':item.team.name,
+				'frequency':item.frequency,
+				'cost':str(locale.currency(item.cost,grouping=True)),
+				})
+
+		tipo=data_contrato.tipo_tarifa
+		tipo_tarifa_des=''	
+		if tipo=='1':
+			tipo_tarifa_des='Tarifa Normal'
+		if tipo=='2':
+			tipo_tarifa_des='Tarifa Alta'
+		if tipo=='3':
+			tipo_tarifa_des='Tarifa Baja'
+
+		frecuencia=data_contrato.frequency
+		frecuencia_des=''
+
+		if frecuencia=='Daily':
+			frecuencia_des='Dia'
+		if frecuencia=='Weekly':
+			frecuencia_des='Semanal'
+		if frecuencia=='Monthly':
+			frecuencia_des='Mensual'
+		if frecuencia=='Semestral':
+			frecuencia_des='Semestral'
+		if frecuencia=='Yearly':
+			frecuencia_des='Año'
+
+
+
+
+		data={
+		'name':data_contrato.name,
+		'code':data_contrato.code,
+		'propiedad':data_contrato.property_id.name,
+		'manejando':data_contrato.manager_id.name,
+		'moneda':data_contrato.currency_id.name,
+		'inquilino':data_contrato.tenant_id.name,
+		'compania':data_contrato.company_id.name,
+		'deposito':str(locale.currency(data_contrato.deposit,grouping=True)),
+		'despo_recivido':data_contrato.deposit_received,
+		'contacto':data_contrato.contact_id.name,
+		'fecha':data_contrato.ten_date.strftime('%m/%d/%Y %H:%M:%S'),
+		'despo_regreso':str(locale.currency(data_contrato.amount_return,grouping=True)),
+		'desp_cantregreso':data_contrato.deposit_return,
+		'tipotarifa':tipo_tarifa_des,
+		'hora_entrada':data_contrato.hora_entrada,
+		'hora_salida':data_contrato.hora_salida,
+		'check_in':data_contrato.chech_in.strftime('%m/%d/%Y %H:%M:%S'),
+		'banedera_in_real':data_contrato.bandera_in_realizado,
+		'usuario_accesos':data_contrato.entrega_acceso_id.name,
+		'email':data_contrato.email,
+		'telefono':data_contrato.telefono,
+		'chech_out':data_contrato.chech_out.strftime('%m/%d/%Y %H:%M:%S'),
+		'banedera_out_real':data_contrato.bandera_out_realizado,
+		'sugerencia':data_contrato.suggested_month,
+		'frecuencia':frecuencia_des,
+		'totalrenta':str(locale.currency(data_contrato.total_rent,grouping=True)),
+		'rent_schedule':data_rent,
+		'mantenimientos':data_mente,
+		}
+
+		return request.render("website_custom_property.contractos_view_data", data)
+		
+
+
+
 
 
 

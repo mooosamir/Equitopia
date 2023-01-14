@@ -23,6 +23,7 @@
        'views/my_property.xml',
        'views/propietario_calendario.xml',
        'views/Website_alert_clock.xml',
+       'views/view_contrato.xml',
        'views/alert_clock.xml',
      
        

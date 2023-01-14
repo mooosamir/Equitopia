@@ -11,6 +11,7 @@
                                    <h3><span><t t-esc="name"/></span></h3>
                                    <p class="load text-muted">Resiva la ultima informacion</p>
                                </div>
+
                                <div class="col-lg-2 ml-auto">
                                    <label class="text-muted" for="propiead_haber">Selecciona Propiedad</label>                         
                                    <span id="propiead_haber"></span>
@@ -45,8 +46,10 @@
                                  <a class="my-3"  id="calendary_show" 
                                     href="/propiedades/calendario"><i class="fas fa-calendar" 
                                     style="font-size:24px"></i></a>
-                                 <a class="my-3" id="export_dashbord" 
-                                    href="#"><i class="fa fa-print" style="font-size:24px"></i></a>
+                                 <a class="my-3" href="/property/dashbord">
+                                    <i class="fa fa-print" style="font-size:24px"></i></a>
+
+
                                  </div>
                             </div>
                        </div>

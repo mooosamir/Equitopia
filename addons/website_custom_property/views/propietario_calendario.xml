@@ -9,13 +9,13 @@
                 </div>
             </div> 
 
-            <h1>Calendario de reservaciones de propiedades</h1>                 
+            <h1 style="text-align: center;">Calendario de reservaciones de propiedades</h1>    
             <input type="hidden" id="users" name="users" t-att-value="request.session.uid"/>
             <div class="row">
               <div class="col-xl-2 col-lg-2 col-md-12 col-sm-12">
                   <button type="btn" style="display:none" id="siguiente" name="siguiente">1</button>
                   <button type="btn" style="display:none" id="atraz" name="atraz">0</button>
-                  <input type="text" id="fecha_search" name="fecha_search" style="display:none"/>
+                  <input type="text" id="fecha_search" name="fecha_search"  style="display:none"/>
                   <div id="data_propiedad">                    
                   </div> 
                  <!--  <div id="total_total"><div>  -->      

@@ -12,19 +12,18 @@ odoo.define('website_custom_property.custom_property_dashbord', function (requir
         });
 
     }
+     //cambiar a leido la alerta
+    $(".marca").each(function(index,element){   
+    if($(this).attr('checked')){
+     $(this).closest('tr').css('font-weight','normal')
+    }   
+   });
+
 
     var loggin=$("#users").val()
     
     if (typeof loggin !== "undefined"){
-        setInterval(load_alert,3000);       
-     
-    $(".marca").each(function(index,element){
-   if($(this).attr('checked')){
-    $(this).closest('tr').css('font-weight','normal')
-   }
-   });
-
-    
+        setInterval(load_alert,3000);    
 
           
     $(document).on('click','#alertas,#marcar_leido',function(){
@@ -335,15 +334,6 @@ odoo.define('website_custom_property.custom_property_dashbord', function (requir
 }
 
 
-$(document).on('click',"#export_dashbord",function(){
-var prtContent = document.getElementById("print_button");
-var WinPrint = window.open('', '', 'left=0,top=0,width=800,height=900,toolbar=0,scrollbars=0,status=0');
-WinPrint.document.write(prtContent.innerHTML);
-WinPrint.document.close();
-WinPrint.focus();
-WinPrint.print();
-WinPrint.close();
-});
 
 
 });
