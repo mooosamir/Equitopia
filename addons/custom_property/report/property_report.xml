@@ -9,11 +9,11 @@
 			<field name="code">action=model.print_report_property_pdf()</field>
 		</record>
 
-		<menuitem 
+		<!-- <menuitem 
 			id="object_name_property" 
 			name="Estado de propiedades" 
 			parent="property_management.menu_report_sub" 
-			action="menu_action_property"/>
+			action="menu_action_property"/> -->
 
 		<record id="action_custom_property_report_menu" model="ir.actions.report">
 			<field name='name'>Propiedades</field>

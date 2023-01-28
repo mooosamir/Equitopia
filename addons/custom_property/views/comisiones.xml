@@ -3,7 +3,7 @@
     <record id="account_analytic_commission_invoice" model="ir.ui.view">
       <field name="name">account_analytic_commission_invoice</field>
       <field name="model">account.analytic.account</field>
-      <field name="inherit_id" ref="property_landlord_management.landlord_analytic_view_form_id" />
+      <field name="inherit_id" ref="property_management.property_analytic_view_form" />
       <field name="arch" type="xml">
         <field name="total_rent" position="after">
           <field name="commission_invoice" />

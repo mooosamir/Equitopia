@@ -5,6 +5,11 @@ from odoo.exceptions import UserError
 from datetime import date,datetime
 import calendar
 import dateutil.relativedelta
+import matplotlib.pyplot as plt
+import matplotlib.image as mpimg
+from odoo.modules import get_module_path
+import numpy as np
+import calendar
 # report de resultado de todo el hisorial de cada propiedad
 # con sus metricas
 class Estado_resultados(models.Model):
@@ -188,7 +193,81 @@ class Estado_resultados(models.Model):
 	
 	def mes_find(self,mes):
 		vec=['','ENERO','FEBRERO','MARZO','ABRIL','MAYO','JUNIO','JULIO','AGOSTO','SEPTIEMBRE','OCTUBRE','NOVIEMBRE','DICIEMBRE']
-		return vec[mes]				
+		return vec[mes]	
+
+
+	def drawing_chats_rent(self):		
+		titles=["Programadas","Efectivas"]
+		rentas_estados=[self.rent_cronograma,self.rent_efectivo]
+		plt.bar(titles,rentas_estados,color="blue",width=0.4)
+		plt.title("Rentas")
+		path = get_module_path('custom_property')
+		plt.savefig(path+'/static/src/img/rentbar.png')
+		plt.close()
+	
+	def drawing_chats_porcent(self):
+		estados_propiedad = [self.porcent_libre,self.procetaje_ocupado]
+		title_porcent = ["Libre","Ocupado"]
+		plt.pie(estados_propiedad, labels=title_porcent, autopct="%0.1f %%")
+		plt.axis("equal")
+		plt.title("Porcetajes de ocupacion")
+		path = get_module_path('custom_property')
+		plt.savefig(path+'/static/src/img/procetajeocupacion.png')
+		plt.close()
+
+	def drawing_chats_histo(self):
+		historial_rentas=[self.rent_cobradas,self.rent_por_cobrar]
+		titles=['RC','RPC']
+		plt.bar(titles,historial_rentas,color="blue",width=0.4)
+		plt.title("historial rentas")
+		path = get_module_path('custom_property')
+		plt.savefig(path+'/static/src/img/historibar.png')
+		plt.close()
+
+	def drawing_chats_metric(self):
+		metricas=[self.mantenimientos,self.servicios,self.otros_gastos,self.comisiones]
+		titles=['Man','Servi','OG','Comi']
+		plt.bar(titles,metricas,color="blue",width=0.4)
+		plt.title("Metricas")
+		path = get_module_path('custom_property')
+		plt.savefig(path+'/static/src/img/metricbar.png')
+		plt.close()
+
+
+	def drawin_chart_bar_histor(self):
+		total_neta=[0,0,0,0,0,0,0,0,0,0,0,0]
+		total_gastos=[0,0,0,0,0,0,0,0,0,0,0,0]
+
+		fecha_actual=datetime.now()
+		inicio=datetime(fecha_actual.year,1,1)
+		fin=datetime(fecha_actual.year,12,31)
+
+		data=self.env['estado.result'].search([('id','=',self.id),('fecha_report','>=',inicio),
+			('fecha_report','<=',fin)])	
+
+		x=0
+		for item in data:
+			gastos=item.mantenimientos+item.servicios+item.otros_gastos+item.comisiones
+			total_neta[x]=item.ingresos_netos
+			total_gastos[x]=gastos
+			x=x+1
+
+		titles=['ENE','FEB','MAR','ABR','MAY','JUN','JUL','AGO','SET','OCT','NOV','DIC']
+
+		x_axis=np.arange(len(titles))
+
+		plt.bar(x_axis-0.2,total_neta,0.4,label="Ingresos")
+		plt.bar(x_axis+0.2,total_gastos,0.4,label="Egresos")
+
+		plt.xticks(x_axis,titles)
+		plt.xlabel("Mes")
+		plt.ylabel("Cantidad")
+		plt.title("Ingreso vs Egresos")
+		plt.legend()	
+		path = get_module_path('custom_property')
+		plt.savefig(path+'/static/src/img/total.png')
+		plt.close()
+
 
 	def calc_property_id(self):		
 		if self.property_id:
@@ -200,6 +279,7 @@ class Estado_resultados(models.Model):
 
 		
 		fecha_actual=datetime.now()
+		report_id=0
 		days_max=calendar.monthrange(int(fecha_actual.year),int(fecha_actual.month))
 		date_start=date(int(fecha_actual.year),int(fecha_actual.month),1)
 		date_stop=date(int(fecha_actual.year),int(fecha_actual.month),int(days_max[1]))		
@@ -291,6 +371,7 @@ class Estado_resultados(models.Model):
 				 'totalgastos_full':totalgastos,
 				 'preview':True,
 				 'recervaciones':html,
+				 'comisiones':comisiones
 				}
 				estados_lista=datfor.search([('property_id','=',pd.id),('foreport','=',True)])
 				if len(estados_lista)>=1:
@@ -302,6 +383,7 @@ class Estado_resultados(models.Model):
 					if pd.send_state_result:
 						self.action_state_property_send(linea_values)
 
+	
 			else:
 				self.rent_cobradas=rent_cobradas
 				self.rent_cronograma=rent_cronograma
@@ -317,6 +399,7 @@ class Estado_resultados(models.Model):
 				self.foreport=True
 				self.totalgastos_full=totalgastos
 				self.reservaciones=html
+				self.comisiones=comisiones
 				#self.preview=False
 
 
@@ -342,6 +425,13 @@ class Estado_resultados(models.Model):
 					'fecha_report':fecha_actual,
 					'mes_cargado':fecha_actual.month
 					})
+
+
+
+
+
+			
+	
 
 		
 #si en  dado caso se el reporte de hace cada dia 1 de mes entonce hay que restarle uno al mes

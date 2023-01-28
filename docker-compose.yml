@@ -10,6 +10,7 @@ services:
 
   odoo13:
     image: odoo:13
+    user: root
     depends_on:
       - db
     ports:

@@ -77,6 +77,7 @@ class Website_dashborad_property(http.Controller):
 		ano=kw.get('ano')
 		mes=kw.get('mes')
 		seleciona_propiedad=kw.get('propiedad')
+		raise UserError(str(seleciona_propiedad))
 		month_range=calendar.monthrange(int(ano),int(mes))
 		
 		start_filter=date(int(ano),int(mes),1)
